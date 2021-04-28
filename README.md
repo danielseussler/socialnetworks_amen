@@ -1,7 +1,6 @@
-# Social Networks: AMEN Models
-=============================================================================
-
-Work in Progress. Replication Code for the Analysis of The Alliance Data Set (Leeds 2002) using AMEN Models.
+## Social Networks: AMEN Models
+Work in Progress. Replication Code for the Analysis of The Alliance Data Set 
+(Leeds 2002) using AMEN Models.
 
 
 
