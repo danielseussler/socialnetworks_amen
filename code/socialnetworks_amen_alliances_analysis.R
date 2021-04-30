@@ -1,5 +1,5 @@
 # Seminar on Statistical Modelling of Social Networks
-# Topic: Additive and Multiplicative Effects Model
+# Topic: The Additive and Multiplicative Effects Model
 # Daniel A. Seussler Becerra
 
 library(tidyverse)
@@ -25,6 +25,7 @@ allyNet2000 <- allyNet[["2000"]]
 lNet2000 <- lNet[["2000"]]
 LSP2000 <- LSP[["2000"]]
 warNet2000 <- warNet[["2000"]]
+countries <- colnames(contigMat)
 rm("allyNet", "lNet", "LSP", "warNet")
 
 
@@ -43,15 +44,16 @@ components(allyNet2000, connected = "strong")
 # Visualization ----------------------------------------------------------------
 
 plot(allyNet2000)
-
+labels_countries20 <- countries
+labels_countries20[InDegree < 10] <- ""
 
 ggnetwork(allyNet2000) %>%
   ggplot(aes(x = x, y = y, xend = xend, yend = yend)) +
   geom_edges(color = "grey") +
   geom_nodes(color = "red", size = InDegree / 10) +
   theme_blank() +
-  ggtitle("The Alliances Year 2000")
-# geom_nodelabel_repel
+  ggtitle("The Alliances Year 2000")+
+  geom_nodelabel_repel(label = labels_countries20)
 
 
 hist(InDegree, xlab = "Indegree", main = "In-Degree Distribution", prob = FALSE, breaks = 50)
