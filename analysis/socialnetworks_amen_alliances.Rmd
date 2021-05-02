@@ -1,0 +1,60 @@
+---
+title: Additive and Multiplicative Effects Networks Model
+subtitle: Seminar on Statistical Modeling of Social Networks
+author: Daniel A. Seussler Becerra^1^
+date: \scriptsize^1^ Department of Statistics, University of Munich, Germany
+output:
+  pdf_document:
+    number_sections: true
+  word_document: default
+  html_document:
+    df_print: paged
+    number_sections: true
+classoption: twoside
+fontsize: 11pt
+geometry: margin=1in 
+links-as-notes: true 
+bibliography: 
+- references.bib
+header-includes:
+  - \usepackage{float}
+  - \usepackage{natbib}\bibliographystyle{agsm}
+keywords: Social Networks, AME Models, Bayesian estimation.
+abstract: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. **Keywords: Social Networks, AME Models, Bayesian estimation.**"
+thanks: "Replication files are available on Github (http://github.com/danielseussler). **Current version**: `r format(Sys.time(),'%B %d, %Y')`; **Corresponding author**: daniel.seussler@gmail.com" 
+---
+
+\newpage
+
+# Introduction
+
+
+# Theory
+
+## The Model
+
+
+## Parameter Estimation
+
+ 
+
+# Application: The Alliances Data Set
+
+
+
+## Extension: Modeling longitudinal data
+
+
+
+## Citations not to forget
+[@minhas_hoff_ward_2019], [@10.1214/19-STS757], [@hoff2015dyadic], 
+[@doi:10.1177/0022343316630783], @handcock:statnet, 
+@doi:10.1080/03050620213653
+
+
+
+
+
+
+\newpage
+# References

@@ -1,0 +1,47 @@
+---
+title: "Additive and Multiplicative Effects Network Models"
+subtitle: 'Seminar on Statistical Modeling of Social Networks'
+author: "Daniel A. Seussler Becerra"
+date: "xx. Juli 2021"
+output:
+  beamer_presentation:  
+    theme: metropolis
+    latex_engine: xelatex
+    includes:
+      in_header: "theme.tex"
+---
+
+# In the morning
+
+## Getting up
+
+- Turn off alarm
+- Get out of bed
+
+## Breakfast
+
+- Eat eggs
+- Drink coffee
+
+# In the evening
+
+## Dinner
+
+- Eat spaghetti
+- Drink wine
+
+---
+
+```{r, cars, fig.cap="A scatterplot.", echo=FALSE}
+plot(cars)
+```
+
+## Going to sleep
+
+- Get in bed
+- Count sheep
+
+## The Additive Part
+
+$$ y_{ij} = \mu + e_{ij}$$
+$$ e_{ij} = a_i + b_j + e_{ij}$$
