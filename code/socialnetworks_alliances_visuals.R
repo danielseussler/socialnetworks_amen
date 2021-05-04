@@ -99,7 +99,7 @@ Y <- as.matrix.network(allyNet2000)
 
 netplot(Y, xlab = "The Alliances Network Year 2000", seed = 42, directed = FALSE, plotnames = FALSE, plot.iso = FALSE)
 netplot(Y, xlab = "The Alliances Network Year 2000", seed = 42, directed = FALSE, plotnames = TRUE)
-netplot(Y, xlab = "The Alliances Network Year 2000", seed = 42, directed = FALSE, plotnames = TRUE, plot.iso = FALSE)
+netplot(Y, seed = 42, directed = FALSE, plotnames = TRUE, plot.iso = FALSE)
 netplot(warNet2000, seed = 42)
 netplot(contigMat, seed = 42)
 
