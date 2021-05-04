@@ -28,33 +28,30 @@ thanks: "Replication files are available on Github (http://github.com/danielseus
 
 # Introduction
 
-
 # Theory
 
 ## The Model
 
-
 ## Parameter Estimation
-
- 
 
 # Application: The Alliances Data Set
 
+```{r include=FALSE}
+library(amen)
+library(xergm.common)
+data("alliances")
+```
 
+```{r echo=FALSE, fig.cap="Figure 1 : The Alliances Data Set"}
+allyNet2000 <- allyNet[["2000"]]
+Y <- as.matrix.network(allyNet2000)
+netplot(Y, seed = 42, directed = FALSE, plotnames = TRUE, plot.iso = FALSE)
+```
 
 ## Extension: Modeling longitudinal data
 
-
-
-## Citations not to forget
-[@minhas_hoff_ward_2019], [@10.1214/19-STS757], [@hoff2015dyadic], 
-[@doi:10.1177/0022343316630783], @handcock:statnet, 
-@doi:10.1080/03050620213653
-
-
-
-
-
+## Remarks on the Data Resources
 
 \newpage
+
 # References

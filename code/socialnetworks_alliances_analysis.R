@@ -19,6 +19,7 @@ countries <- colnames(contigMat)
 rm("allyNet", "lNet", "LSP", "warNet")
 
 
+
 # SRRM Model -------------------------------------------------------------------
 
 
