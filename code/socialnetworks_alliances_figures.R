@@ -3,6 +3,8 @@
 
 library(amen)
 library(countrycode)
+library(RColorBrewer)
+library(xergm.common)
 
 set.seed(42)
 
@@ -76,7 +78,7 @@ Y <- as.matrix.network(allyNet2000)
 
 netplot(Y, xlab = "The Alliances Network Year 2000", seed = 42, directed = FALSE, plotnames = FALSE, plot.iso = FALSE)
 netplot(Y, xlab = "The Alliances Network Year 2000", seed = 42, directed = FALSE, plotnames = TRUE)
-netplot(Y, seed = 42, directed = FALSE, plotnames = TRUE, plot.iso = FALSE) #saved as Rplot1.pdf
+netplot(Y, seed = 42, directed = FALSE, plotnames = TRUE, plot.iso = FALSE) 
 netplot(warNet2000, seed = 42)
 netplot(contigMat, seed = 42)
 
@@ -84,12 +86,12 @@ circplot(Y, jitter = 10)    # later for latent variable analysis
 
 Y2 <- Y
 colnames(Y2) <- names; rownames(Y2) <- names
-netplot(Y2, seed = 42, directed = FALSE, plotnames = TRUE, plot.iso = FALSE)
+netplot(Y2, seed = 42, directed = FALSE, plotnames = TRUE, plot.iso = FALSE) #saved as Rplot1.pdf
 
 
 
 # Figure 2: The Alliances Data Set - Regional Color Coding ---------------------
-netplot(Y, seed = 42, directed = FALSE, plotnames = FALSE, plot.iso = FALSE, ncol = regions ) #saved as Rplot2.pdf
+netplot(Y2, seed = 42, directed = FALSE, plotnames = FALSE, plot.iso = FALSE, ncol = regions ) #saved as Rplot2.pdf
 
 
 

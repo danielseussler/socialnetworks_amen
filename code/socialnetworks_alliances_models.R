@@ -93,8 +93,7 @@ Xdyad <- array(data = c(contigMat, lNet2000, LSP2000, warNet2000),
                dim = c(164,164,4),
                dimnames = list(get.vertex.attribute(allyNet2000, "vertex.names"),
                                get.vertex.attribute(allyNet2000, "vertex.names"),
-                               c("Shared Border","Ally last Year", "Shared Partners before", 
-                                 "War Indicator")))
+                               c("contigMat", "lNet", "LSP", "warNet")))
 
 # Model with added Nodal Covariates Cinc and Polity + All Dyad
 fit_SRRM_nodal_dayd <- ame(Y, Xdyad = Xdyad, Xrow = Xno[, 2:3], Xcol = Xno[, 2:3], family = "bin", symmetric = TRUE)
@@ -107,23 +106,22 @@ summary(fit_SRRM_nodal)
 
 
 # Full AME Model ---------------------------------------------------------------
-fit_AME_R3 <- ame(Y, Xdyad = Xdyad, Xrow = Xno[, 2:3], R = 3, Xcol = Xno[, 2:3], family = "bin", symmetric = TRUE)
-saveRDS(fit_AME_R3, file = "analysis/models/fit_AME_R3.rds")
+fit_AME_R2 <- ame(Y, Xdyad = Xdyad, Xrow = Xno[, 2:3], R = 3, Xcol = Xno[, 2:3], family = "bin", symmetric = TRUE)
+saveRDS(fit_AME_R2, file = "analysis/models/fit_AME_R2.rds")
 
-fit_AME_R3 <- readRDS(file = "analysis/models/fit_AME_R3.rds")
-summary(fit_AME_R3)
+fit_AME_R2 <- readRDS(file = "analysis/models/fit_AME_R2.rds")
+summary(fit_AME_R2)
 
 
 
 
 
 # Comparison of R - Dimension of Latent Factors --------------------------------
+fit_AME_R3 <- ame(Y, Xdyad = Xdyad, Xrow = Xno[, 2:3], R = 3, Xcol = Xno[, 2:3], family = "bin", symmetric = TRUE)
+saveRDS(fit_AME_R3, file = "analysis/models/fit_AME_R3.rds")
 
-
-
-
-
-
+fit_AME_R3 <- readRDS(file = "analysis/models/fit_AME_R3.rds")
+summary(fit_AME_R3)
 
 
 
@@ -140,8 +138,7 @@ XDyad_time <- array(data = 0, dim = c(164, 164, 4, 19), dimnames = list(countrie
 for (yr in seq_along(year)) {
   # Sociomatrix
   year_char <- year[yr]
-  abc <- as.matrix.network(allyNet[[year_char]])
-  Y_time[, , yr] <- abc
+  Y_time[, , yr] <- as.matrix.network(allyNet[[year_char]])
 
   # Nodal Covariates
   XNode_time[, , yr] <- cbind(
@@ -155,6 +152,7 @@ for (yr in seq_along(year)) {
 }
 
 
+
 # AME model replicated relational data -----------------------------------------
 tic("Largest Model so far:")
 fit_AME_Rep_R3 <- ame_rep(Y_time, Xdyad = XDyad_time, Xrow = XNode_time, Xcol = XNode_time,
@@ -164,3 +162,25 @@ saveRDS(fit_AME_Rep_R3, file = "analysis/models/fit_AME_Rep_R3.rds")
 
 fit_AME_Rep_R3 <- readRDS(file = "analysis/models/fit_AME_Rep_R3.rds")
 summary(fit_AME_Rep_R3)
+
+
+
+
+# Modified summary function of amen package to output a table ------------------
+table_ame <- function(object, ...){ 
+  fit <- object
+  tmp <- cbind(
+    apply(fit$BETA, 2, mean), apply(fit$BETA, 2, sd),
+    apply(fit$BETA, 2, mean) / apply(fit$BETA, 2, sd),
+    2 * (1 - pnorm(abs(apply(fit$BETA, 2, mean) / apply(fit$BETA, 2, sd))))
+  )
+  colnames(tmp) <- c("pmean", "psd", "z-stat", "p-val")
+  out <- round(tmp, 4)
+  
+  
+  tmp <- cbind(apply(fit$VC, 2, mean), apply(fit$VC, 2, sd))
+  tmp <- cbind(round(tmp, 4), array("-", dim = c(nrow(tmp), 2)))
+
+  out <- rbind(out, tmp)
+  return(out)
+} 

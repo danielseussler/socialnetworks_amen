@@ -108,8 +108,31 @@ The analysis was done with the R-Software (@rsoftware) and the AMEN R-Package (@
 ```{r libraries, include=FALSE}
 library(amen)
 library(xergm.common)
+library(stargazer)
+data("alliances")
+set.seed(42)
 ```
 
+```{r ame_table, include=FALSE}
+# Modified summary function of amen package to output a table easier to handle
+table_ame <- function(object, ...){ 
+  fit <- object
+  tmp <- cbind(
+    apply(fit$BETA, 2, mean), apply(fit$BETA, 2, sd),
+    apply(fit$BETA, 2, mean) / apply(fit$BETA, 2, sd),
+    2 * (1 - pnorm(abs(apply(fit$BETA, 2, mean) / apply(fit$BETA, 2, sd))))
+  )
+  colnames(tmp) <- c("pmean", "psd", "z-stat", "p-val")
+  out <- round(tmp, 4)
+  
+  
+  tmp <- cbind(apply(fit$VC, 2, mean), apply(fit$VC, 2, sd))
+  tmp <- cbind(round(tmp, 4), array("-", dim = c(nrow(tmp), 2)))
+
+  out <- rbind(out, tmp)
+  return(out)
+} 
+```
 
 
 
@@ -118,6 +141,13 @@ knitr::include_graphics("figures/Rplot01.pdf")
 ```
 
 ## Network Statistics
+
+
+```{r, results ='asis', echo=FALSE}
+Y <- as.matrix.network(allyNet[["2000"]])
+stargazer(gofstats(Y), type = "latex", header = FALSE, title = "Goodness of Fit Statistics for the Year 2000")
+```
+
 
 
 
@@ -148,7 +178,22 @@ plot(fit_SRM)
 ## Extension: Modeling longitudinal data
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,
 
+```{r, results ='asis', message = FALSE}
+fit_AME_Rep_R3 <- readRDS(file = "models/fit_AME_Rep_R3.rds")
+stargazer(cbind(fit_AME_Rep_R3$BETA,fit_AME_Rep_R3$VC), type = "latex", header = FALSE, summary = TRUE, summary.stat = c("n", "mean", "sd"), t.auto = TRUE, title = "Estimated Effects for AME Replicated Data")
+```
 
+```{r, results ='asis', message = FALSE}
+fit_AME_Rep_R3 <- readRDS(file = "models/fit_AME_Rep_R3.rds")
+stargazer(cbind(fit_AME_Rep_R3$BETA,fit_AME_Rep_R3$VC), type = "latex", header = FALSE, summary = TRUE, summary.stat = c("n", "mean", "sd"), t.auto = TRUE, title = "Estimated Effects for AME Replicated Data")
+```
+
+```{r, results ='asis', message = FALSE}
+fit_AME_Rep_R3 <- readRDS(file = "models/fit_AME_Rep_R3.rds")
+stargazer(table_ame(fit_AME_Rep_R3), type = "latex", header = FALSE,
+          summary = FALSE, title = "Estimated Effects for AME Replicated Data",
+          notes = "MCMC Estimates of 500 Burn-In and 10000 Draws.")
+```
 
 
 
