@@ -21,7 +21,7 @@ countries <- colnames(contigMat)
 Y <- as.matrix.network(allyNet2000)
 
 # Calculate Geographic Distance between Countries ------------------------------
-
+GeoDistance <- readRDS(file = "analysis/models/GeoDistance.rds")
 
 
 

@@ -17,7 +17,7 @@ country_name <- countrycode(countries,
   origin = "cowc", destination = "country.name",
   custom_match = c("GFR" = "German Federal Republic")
 )
-country_name <- data.frame("Name" = country_name)
+country_name <- data.frame( "Index" = 1:164, "Name" = country_name)
 
 head(world.cities)
 capitals <- world.cities %>% filter(capital == 1)
@@ -53,17 +53,20 @@ missing_cities <- world.cities %>%
 country_capital[missing_ind, ]$name <- missing_data$name
 
 
-country_capital[missing_ind, ] <- merge(country_capital[missing_ind, 1:2], missing_cities,
-  by.x = "name", by.y = "name",
-  all.x = TRUE, all.y = FALSE
-)
-
+country_capital[missing_ind, ] <- left_join(country_capital[missing_ind, 1:3], missing_cities,
+  by = "name")
+any(is.na(country_capital))
 
 # Compute Distance -------------------------------------------------------------
-country_capital <- country_capital %>% st_as_sf(coords = c("long", "lat"), crs = 4326)
+country_capital <- country_capital %>% 
+  st_as_sf(coords = c("long", "lat"), crs = 4326) %>%
+  arrange(Index)
+
 GeoDistance <- st_distance(country_capital)
 any(is.na(GeoDistance))
 
 set_units(GeoDistance, "km")
+colnames(GeoDistance) <- countries
+rownames(GeoDistance) <- countries
 
 saveRDS(GeoDistance, file = "analysis/models/GeoDistance.rds")
