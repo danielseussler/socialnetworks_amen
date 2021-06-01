@@ -20,6 +20,12 @@ countries <- colnames(contigMat)
 
 Y <- as.matrix.network(allyNet2000)
 
+# Calculate Geographic Distance between Countries ------------------------------
+
+
+
+
+
 
 
 # ANOVA Decomposition ----------------------------------------------------------
@@ -125,9 +131,50 @@ summary(fit_AME_R3)
 
 
 
+################################################################################
+# AME Model: Geometric Evolution Paper Specification----------------------------
+# No Nodal Effects, Dyadic Effects: Shared Border, Shared Parners, Conflict, PolSim, CapRat
+PolSim2000 <- array(data = 0, dim = c(164, 164))
+CapRat2000 <- array(data = 0, dim = c(164, 164))
+
+# Multiply by 100 to avoid numerical issues. 100% percentage value.
+# sum(get.vertex.attribute(allyNet2000, "cinc") almost 1.
+polity2000 <- get.vertex.attribute(allyNet2000, "polity")
+cinc2000 <- 100*get.vertex.attribute(allyNet2000, "cinc")
+
+for (i in 1:164){
+  for(j in 1:164){
+    PolSim2000[i,j] <- (20 - abs(polity2000[i] - polity2000[j])) / 20
+    CapRat2000[i,j] <- ifelse(cinc2000[i]/cinc2000[j] >= 1, 
+                              log(cinc2000[i]/cinc2000[j]),
+                              log(cinc2000[j]/cinc2000[i]))
+  }
+}
+
+# Dropped out countries: CINC = 0. Issues for the Ratio. Set manually 0. 
+CapRat2000[is.infinite(CapRat2000)] <- 0
+CapRat2000[is.nan(CapRat2000)] <- 0
+
+Xevol <- array(data = c(contigMat, LSP2000, warNet2000, PolSim2000, CapRat2000),
+               dim = c(164,164,5),
+               dimnames = list(get.vertex.attribute(allyNet2000, "vertex.names"),
+                               get.vertex.attribute(allyNet2000, "vertex.names"),
+                               c("Shared Border", "Shared Partners", "Conflict Dummy", 
+                                 "Political Similarity", "Capability Ratio" )))
+
+
+ame_geom_evol_R2 <- ame(Y, Xdyad = Xevol, R = 2, family = "bin", symmetric = TRUE,nscan = 20000, burn = 1000)
+saveRDS(ame_geom_evol_R2, file = "analysis/models/ame_geom_evol_R2.rds")
+
+ame_geom_evol_R2 <- readRDS(file = "analysis/models/ame_geom_evol_R2.rds")
+summary(ame_geom_evol_R2)
 
 
 
+
+
+
+################################################################################
 # Time Series Data -------------------------------------------------------------
 year <- c("1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1990", 
           "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000")

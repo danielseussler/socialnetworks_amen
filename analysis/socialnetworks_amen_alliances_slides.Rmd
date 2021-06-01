@@ -1,5 +1,5 @@
 ---
-title: "Additive and Multiplicative Effects Network Models"
+title: "The Additive and Multiplicative Effects Network Model"
 subtitle: 'Seminar on Statistical Modeling of Social Networks'
 author: "Daniel A. Seussler Becerra"
 date: "xx. Juli 2021"
@@ -11,37 +11,68 @@ output:
       in_header: "theme.tex"
 ---
 
-# In the morning
+# Introduction
 
-## Getting up
+## Network Effects
 
-- Turn off alarm
+- Dyadic Data
 - Get out of bed
 
-## Breakfast
 
-- Eat eggs
-- Drink coffee
-
-# In the evening
-
-## Dinner
-
-- Eat spaghetti
-- Drink wine
-
----
-
-```{r, cars, fig.cap="A scatterplot.", echo=FALSE}
-plot(cars)
-```
-
-## Going to sleep
-
-- Get in bed
-- Count sheep
+# Theory
 
 ## The Additive Part
 
 $$ y_{ij} = \mu + e_{ij}$$
 $$ e_{ij} = a_i + b_j + e_{ij}$$
+
+
+## The Multiplicative Part
+
+## Goodness of Fit
+
+- Dyadic and Triadic Dependency
+- Trace Plots
+
+## Extensions
+
+- Binary Data
+- Censored Data
+- Ordinal Data
+
+## Extension: Longitudinal Networks
+
+- Vector Auto Regression Models
+- Time as Interaction 
+
+
+# Application: The Alliances Data Set
+
+## Network Statistics
+
+- Statistic 1
+- Statistic 2
+
+## Visualization
+
+- Figure 1
+
+## Towards AME Models
+
+- SRM Results
+- Latent Factor Results
+
+## Final 
+
+- Comparison with model xx
+- Goodness of Fit
+
+## Longitudinal Data 19xx-20xx
+
+- Early Results 
+- Identification Issues 
+
+
+## The End
+
+- Thank you very much for your attention!

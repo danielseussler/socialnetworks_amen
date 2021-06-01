@@ -1,26 +1,22 @@
 ---
-title: Additive and Multiplicative Effects Model
+title: The Additive and Multiplicative Effects Model
 subtitle: Seminar on Statistical Modeling of Social Networks
-author: Daniel A. Seussler Becerra^1^
-date: \scriptsize^1^ Department of Statistics, University of Munich, Germany
+author: Daniel A. Seussler Becerra
+date: "June 2021"
 output:
-  pdf_document:
-    number_sections: true
-  word_document: default
-  html_document:
-    df_print: paged
-    number_sections: true
+  bookdown::pdf_document2: 
+    fig_caption: yes
 classoption: twoside
 fontsize: 11pt
+toc: false
 geometry: margin=1in 
-links-as-notes: true 
 bibliography: 
-- references.bib
+  - references.bib
 header-includes:
   - \usepackage{float}
   - \usepackage{natbib}\bibliographystyle{agsm}
-keywords: Social Networks, AME Models, Bayesian estimation.
-abstract: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. **Keywords: Social Networks, AME Models, Bayesian estimation.**"
+keywords: Social Networks, Additive and Multiplicative Effects, Bayesian estimation, International Relations.
+abstract: "This seminar paper introduces the Additive and Multiplicative Effects Network Model as proposed in @Hoff2021. First, a general introduction to network and relational data is given along with the statistical challenges of dyadic data analysis. Second, the Additive and Multiplicative Effects model ist introduced and motivated. I then apply this to data from the Alliances Treaty and Obligations Project (ATOP) in the year 2000. *Keywords: Social Networks, Dyadic Data, Bayesian estimation, International Relations.*"
 thanks: "Replication files are available on Github (http://github.com/danielseussler). **Current version**: `r format(Sys.time(),'%B %d, %Y')`; **Corresponding author**: daniel.seussler@gmail.com"
 nocite: |
   @ComplexDependencies, @TowardNetwork, @Hoff2007, @Hoff2005, @handcock:statnet, @ATOPData, @hoff2015dyadic, @Hoff2021, @minhas_hoff_ward_2019, @Minhas_Hoff_Ward_2016
@@ -29,7 +25,7 @@ nocite: |
 \newpage
 
 # Introduction
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.Aenean ma ssa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,
 
 
 # Theory
@@ -37,7 +33,8 @@ Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula 
 
 
 
-## Network Effects & Social Structure
+**Network Effects** 
+
 * 1st-order: Sender (Receiver) Effects
 * 2nd-order: Reciprocity
 * 3rd-order: Homophily & Stochastic Equivalence
@@ -45,12 +42,10 @@ Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula 
 
 
 
-## The Model
+**The Social Relations Model**
+
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,
 
-
-
-## The SRM Model: The Additive Part
 \begin{align*}
 \begin{aligned}
       y_{ij} &= \mu + e_{ij} \\
@@ -64,8 +59,8 @@ Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula 
 \end{align*}
 
 
+**The Latent Factor Model**
 
-## The Latent Factor Model
 \begin{align*}
   {\textbf{u}_{i},\textbf{v}_{j}} \in \mathbb{R}^{k} \;\; i,j \in \{1, \ldots, n \} \\
 \end{align*}
@@ -79,8 +74,8 @@ Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula 
 \end{align*}
 
 
+**Bringing it all together: The AME Network Model**
 
-## Additive and Multiplicative Effects (AME) Model 
 \begin{align*}
   \begin{aligned}
       y_{ij,t} &= g(\theta_{ij,t}) \\ 
@@ -91,29 +86,40 @@ Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula 
 \end{align*}
 
 
+**Parameter Estimation and Goodness of Fit**
 
-## Goodness of Fit 
-
-
-
-## Parameter Estimation
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,
 
+**Modeling Longitudinal Data**
 
-# Application case: The Alliances Data Set 2000
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,
 
-The analysis was done with the R-Software (@rsoftware) and the AMEN R-Package (@ramen).
+\newpage
+# Application case: The Alliances Data Set
+In this section the above introduced additive and multiplicative effects model is applied to the network of international defense alliance network. The data is an excerpt from the data used in @ComplexDependencies and @TowardNetwork and contains the yearly defense network as a time series from 1981 - 2000.^[The data set `alliances` can be conveniently accessed as network data in the R-Package `xergm.common`.] It furthermore includes information on military capabilites, political regime types, geographic borders and interstate conflict. From here on out, I refer to this data set as the `alliances` data set. 
 
-```{r libraries, include=FALSE}
+The analysis is structured as follows. First, restricted to a cross-sectional study of the year 2000, I examine the alliances structure with respect to the network statistics and preliminary models to motivate the application of statistical network approaches. Second, a full specification of an AME-model is presented, along with the selection of appropiate parameters. Third, I extend briefly the analysis to include a longitudinal analysis of the interstate alliances network capturing the years 1981-2000. The analysis was implemented with the R-Software (@rsoftware) and the AMEN R-Package (@ramen).
+
+```{r setup, echo=FALSE, message=FALSE}
+# These options are tuned for manuscript/presentation.
+# They basically run R in the background except for spitting out figures/tables
+
+knitr::opts_chunk$set(
+	echo = FALSE,
+	error = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+
 library(amen)
 library(xergm.common)
+library(network)
 library(stargazer)
 data("alliances")
 set.seed(42)
+
 ```
 
-```{r ame_table, include=FALSE}
+```{r output_help, include=FALSE}
 # Modified summary function of amen package to output a table easier to handle
 table_ame <- function(object, ...){ 
   fit <- object
@@ -134,28 +140,29 @@ table_ame <- function(object, ...){
 } 
 ```
 
-
-
-```{r, echo=FALSE, fig.cap="The Alliances Data Set in the Year 2000.", fig.align = "center", out.height="95%"}
+```{r alliancesfigure, fig.cap = "Interstate Alliances in the year 2000. Countries with no interstate alliance recorded are ommitted.", fig.align = "center", out.height="95%"}
 knitr::include_graphics("figures/Rplot01.pdf")
 ```
 
-## Network Statistics
+**Network Statistics**
+
+The alliances data set includes 164 countries^[Because this data set covers the time span of 1981 - 2000, it includes countries which existed at *any* point of given time series. To keep the analysis consistent with the longitudinal analysis, I keep all the observed countries.] with a total of 767 observed interstate alliances. Note that we have a symmetric network matrix, as an alliance between two states is taken to be not directed. It exhibits a network density of 0.0574. 61 countries have no alliance within the data set, the United States and Canade feature the most, with 43 and 39 respectively. The median number of alliances is 9. 
+
+A visualization of the interstate alliance network is provided in Figure \@ref(fig:alliancesfigure). Strong clustering on geographic locations is immediately apparent.  At the upper right of the figure Latin America and the Carribean States, at the right the former USSR countries. Europe and the Middle East form respective clusters. Perhaps more surprisingly there are two distinct clusters of african states. 
 
 
-```{r, results ='asis', echo=FALSE}
+```{r results='asis'}
 Y <- as.matrix.network(allyNet[["2000"]])
 stargazer(gofstats(Y), type = "latex", header = FALSE, title = "Goodness of Fit Statistics for the Year 2000")
 ```
 
 
 
+**SRM & Latent Factor Analysis**
 
-
-## Modeling without network effects
 We first fit the model without the SRM Terms. As illustrated in Fig, the model performs quite bad. 
 
-```{r echo=FALSE, fig.cap="Goodness of Fit Statistics for the model without SRM Terms (above) and with SRM Terms (below). As indicated by the dependence structure, the second model performs better, taking sender and receiver effects into account.", fig.show = "hold", out.height = "45%"}
+```{r, fig.cap="Goodness of Fit Statistics for the model without SRM Terms (above) and with SRM Terms (below). As indicated by the dependence structure, the second model performs better, taking sender and receiver effects into account.", fig.show = "hold", out.height = "45%"}
 fit_SRG <- readRDS(file = "models/SRGmodel.rds")
 plot(fit_SRG)
 
@@ -163,19 +170,30 @@ fit_SRM <- readRDS(file = "models/SRMmodel.rds")
 plot(fit_SRM)
 ```
 
+**Modeling interstate alliances**
+
+I follow @geometryofsecurity to define dyadic effects which are both sensible and relevant to the theoretic discussion of interstate alliance networks.^[The author proceeds with a *stochastic actor-oriented* approach for the analysis of longitudinal network data, which relies on different assumptions about the underlying network evolution. However, the relevant network effects are the same.]  
+
+Thus, as dyadic effects I include the geographic distance, a capability ratio, a measure for political similarity and a conflict indicator. The capability ratio is defined as the log of the relative *Composite Index of National Capability* of both countries, with the stronger state as numerator. Political similiarity is measured with the relative deviation of the *polity score*. This yields the following effects for each country pair $(i,j)$: 
+
+$$ CapRat_{ij} = \log\left(\frac{CINC_S}{CINC_W}\right) $$
+
+$$ PolSim_{ij} = \frac{\Delta - \lvert POLITY_i - POLITY_j \rvert)}{\Delta}, \text{  where } \Delta = \max_{ij} \lvert POLITY_i - POLITY_j \rvert $$
+
+See @geometryofsecurity for the theoretic reasoning behind these indicators. 
 
 
 
 
+```{r ame_geom_evol_R2, results ='asis', message = FALSE}
+fit_AME_Rep_R3 <- readRDS(file = "models/fit_AME_Rep_R3.rds")
+stargazer(table_ame(fit_AME_Rep_R3), type = "latex", header = FALSE,
+          summary = FALSE, title = "Estimated Effects for AME Replicated Data",
+          notes = "MCMC Estimates of 500 Burn-In and 10000 Draws.")
+```
 
-## Adding Covariates
+**Extension: Modeling longitudinal data**
 
-
-
-## Adding Time 
-
-
-## Extension: Modeling longitudinal data
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,
 
 ```{r, results ='asis', message = FALSE}
@@ -197,17 +215,7 @@ stargazer(table_ame(fit_AME_Rep_R3), type = "latex", header = FALSE,
 
 
 
-## Things that may be included:
-```{r echo=FALSE}
-network_statistics <- readRDS(file = "models/socialnetworks_statistics.rds")
-knitr::kable(network_statistics,  digits = 2, caption = "Network Statistics $x$ of the Alliances Network 2000")
-
-```
-
-
-```{r echo=FALSE, fig.cap= "The Degree Distribution.", fig.align = "center", out.width = "100%", out.height="40%"}
-knitr::include_graphics("figures/degree_histogram.pdf")
-```  
+# Conlusions
 
 \newpage
 # References

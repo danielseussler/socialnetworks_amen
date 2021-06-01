@@ -1,10 +1,12 @@
 # Seminar on Statistical Modeling of Social Networks
+# Daniel A. Seussler Becerra
 # Code for the Figures
 
 library(amen)
 library(countrycode)
 library(RColorBrewer)
 library(xergm.common)
+library(statnet)
 
 set.seed(42)
 
@@ -48,6 +50,11 @@ network.size(allyNet2000)
 network.edgecount(allyNet2000)
 network.dyadcount(allyNet2000) # which is n*(n-1)/2
 countries[InDegree > 0]
+table(InDegree)
+
+names[regions == "Asia"] 
+names[regions == "Oceania"] 
+
 gden(allyNet2000, mode = "digraph")
 components(allyNet2000, connected = "strong")
 
