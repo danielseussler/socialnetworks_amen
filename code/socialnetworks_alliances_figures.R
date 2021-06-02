@@ -24,16 +24,16 @@ rm("allyNet", "lNet", "LSP", "warNet")
 countries <- colnames(contigMat)
 
 names <- countrycode(countries,
-                     origin = "cowc", destination = "country.name",
-                     custom_match = c("GFR" = "German Federal Republic")
+  origin = "cowc", destination = "country.name",
+  custom_match = c("GFR" = "German Federal Republic")
 )
 
 regions <- countrycode(countries,
-                       origin = "cowc", destination = "continent",
-                       custom_match = c(
-                         "CZE" = "Europe", "GDR" = "Europe", "GFR" = "Europe",
-                         "YAR" = "Asia", "YPR" = "Asia", "YUG" = "Europe"
-                       )
+  origin = "cowc", destination = "continent",
+  custom_match = c(
+    "CZE" = "Europe", "GDR" = "Europe", "GFR" = "Europe",
+    "YAR" = "Asia", "YPR" = "Asia", "YUG" = "Europe"
+  )
 )
 
 set.vertex.attribute(allyNet2000, "region", regions)
@@ -52,18 +52,20 @@ network.dyadcount(allyNet2000) # which is n*(n-1)/2
 countries[InDegree > 0]
 table(InDegree)
 
-names[regions == "Asia"] 
-names[regions == "Oceania"] 
+names[regions == "Asia"]
+names[regions == "Oceania"]
 
 gden(allyNet2000, mode = "digraph")
 components(allyNet2000, connected = "strong")
 
-network_statistics <- c(network.size(allyNet2000), network.edgecount(allyNet2000), 
-                        network.dyadcount(allyNet2000), gden(allyNet2000, mode = "digraph"))
+network_statistics <- c(
+  network.size(allyNet2000), network.edgecount(allyNet2000),
+  network.dyadcount(allyNet2000), gden(allyNet2000, mode = "digraph")
+)
 names(network_statistics) <- c("Size", "Edgecount", "Dyadcount", "Density")
 
 hist(InDegree, xlab = "Indegree", main = "In-Degree Distribution", prob = FALSE, breaks = 50)
-hist(InDegree, xlab = "", ylab = "", main = "", prob = FALSE, breaks = 50) #save as degree_histogram.pdf
+hist(InDegree, xlab = "", ylab = "", main = "", prob = FALSE, breaks = 50) # save as degree_histogram.pdf
 countries[InDegree == 23]
 
 saveRDS(network_statistics, file = "analysis/data/socialnetworks_statistics.rds")
@@ -80,26 +82,53 @@ col[regions == "Americas"] <- brewer.pal(5, "Blues")[5]
 
 
 
-# Figure 1: The Alliances Data Set ---------------------------------------------
+# Figure The Alliances Data Set ------------------------------------------------
 Y <- as.matrix.network(allyNet2000)
 
 netplot(Y, xlab = "The Alliances Network Year 2000", seed = 42, directed = FALSE, plotnames = FALSE, plot.iso = FALSE)
 netplot(Y, xlab = "The Alliances Network Year 2000", seed = 42, directed = FALSE, plotnames = TRUE)
-netplot(Y, seed = 42, directed = FALSE, plotnames = TRUE, plot.iso = FALSE) 
+netplot(Y, seed = 42, directed = FALSE, plotnames = TRUE, plot.iso = FALSE)
 netplot(warNet2000, seed = 42)
 netplot(contigMat, seed = 42)
 
-circplot(Y, jitter = 10)    # later for latent variable analysis
+circplot(Y, jitter = 10) # later for latent variable analysis
 
 Y2 <- Y
-colnames(Y2) <- names; rownames(Y2) <- names
-netplot(Y2, seed = 42, directed = FALSE, plotnames = TRUE, plot.iso = FALSE) #saved as Rplot1.pdf
+colnames(Y2) <- names
+rownames(Y2) <- names
+netplot(Y2, seed = 42, directed = FALSE, plotnames = TRUE, plot.iso = FALSE) # saved as Rplot1.pdf
 
 
 
-# Figure 2: The Alliances Data Set - Regional Color Coding ---------------------
-netplot(Y2, seed = 42, directed = FALSE, plotnames = FALSE, plot.iso = FALSE, ncol = regions ) #saved as Rplot2.pdf
+# Figure The Alliances Data Set - Regional Color Coding ------------------------
+netplot(Y2, seed = 42, directed = FALSE, plotnames = FALSE, plot.iso = FALSE, ncol = regions) # saved as Rplot2.pdf
 
 
 
-# Figure 3: Circplot -----------------------------------------------------------
+# Figure Circplot --------------------------------------------------------------
+ame_geom_evol_R2 <- readRDS(file = "analysis/models/ame_geom_evol_R2.rds")
+Xevol <- readRDS(file = "analysis/models/Xevol.rds")
+plot(ame_geom_evol_R2)
+
+mu <- mean(ame_geom_evol_R2$BETA[, 1])
+bd <- apply(ame_geom_evol_R2$BETA[, 1 + 1:5], 2, mean)
+
+EY2 <- mu + Xbeta(Xevol, bd)
+
+
+circplot(Y, ame_geom_evol_R2$U, ame_geom_evol_R2$V, pscale = 1.1, row.names = countries, col.names = countries)
+
+circplot(Y[InDegree > 0, InDegree > 0],
+  ame_geom_evol_R2$U[InDegree > 0, ], ame_geom_evol_R2$V[InDegree > 0, ],
+  pscale = 1.3, plotnames = FALSE
+)
+
+circplot(Y[InDegree >= 9, InDegree >= 9],
+         ame_geom_evol_R2$U[InDegree >= 9, ], ame_geom_evol_R2$V[InDegree >= 9, ],
+         pscale = 1.3, plotnames = FALSE
+)
+
+circplot(1*(Y[InDegree > 0, InDegree > 0]),
+         ame_geom_evol_R2$U[InDegree > 0, ], ame_geom_evol_R2$V[InDegree > 0, ],
+         pscale = 1.3, plotnames = FALSE
+)

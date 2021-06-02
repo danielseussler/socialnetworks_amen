@@ -65,8 +65,8 @@ country_capital <- country_capital %>%
 GeoDistance <- st_distance(country_capital)
 any(is.na(GeoDistance))
 
-set_units(GeoDistance, "km")
+GeoDistance <- set_units(GeoDistance, "km")
 colnames(GeoDistance) <- countries
 rownames(GeoDistance) <- countries
 
-saveRDS(GeoDistance, file = "analysis/models/GeoDistance.rds")
+saveRDS(GeoDistance, file = "data/GeoDistance.rds")

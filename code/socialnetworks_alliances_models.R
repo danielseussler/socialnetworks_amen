@@ -20,11 +20,10 @@ countries <- colnames(contigMat)
 
 Y <- as.matrix.network(allyNet2000)
 
-# Calculate Geographic Distance between Countries ------------------------------
+
+# Load Geographic Distance between Countries -----------------------------------
 GeoDistance <- readRDS(file = "analysis/models/GeoDistance.rds")
-
-
-
+GeoDistance[contigMat == 1] <- 0 
 
 
 
@@ -110,30 +109,11 @@ summary(fit_SRRM_nodal)
 
 
 
-
-# Full AME Model ---------------------------------------------------------------
-fit_AME_R2 <- ame(Y, Xdyad = Xdyad, Xrow = Xno[, 2:3], R = 3, Xcol = Xno[, 2:3], family = "bin", symmetric = TRUE)
-saveRDS(fit_AME_R2, file = "analysis/models/fit_AME_R2.rds")
-
-fit_AME_R2 <- readRDS(file = "analysis/models/fit_AME_R2.rds")
-summary(fit_AME_R2)
-
-
-
-
-
-# Comparison of R - Dimension of Latent Factors --------------------------------
-fit_AME_R3 <- ame(Y, Xdyad = Xdyad, Xrow = Xno[, 2:3], R = 3, Xcol = Xno[, 2:3], family = "bin", symmetric = TRUE)
-saveRDS(fit_AME_R3, file = "analysis/models/fit_AME_R3.rds")
-
-fit_AME_R3 <- readRDS(file = "analysis/models/fit_AME_R3.rds")
-summary(fit_AME_R3)
-
-
-
 ################################################################################
 # AME Model: Geometric Evolution Paper Specification----------------------------
-# No Nodal Effects, Dyadic Effects: Shared Border, Shared Parners, Conflict, PolSim, CapRat
+# No Nodal Effects, Dyadic Effects 
+# Shared Border, Shared Parners, Conflict, PolSim, CapRat
+
 PolSim2000 <- array(data = 0, dim = c(164, 164))
 CapRat2000 <- array(data = 0, dim = c(164, 164))
 
@@ -151,19 +131,20 @@ for (i in 1:164){
   }
 }
 
-# Dropped out countries: CINC = 0. Issues for the Ratio. Set manually 0. 
+# Manually correct CINC 0 Issue 
 CapRat2000[is.infinite(CapRat2000)] <- 0
 CapRat2000[is.nan(CapRat2000)] <- 0
 
-Xevol <- array(data = c(contigMat, LSP2000, warNet2000, PolSim2000, CapRat2000),
+Xevol <- array(data = c(GeoDistance, LSP2000, warNet2000, PolSim2000, CapRat2000),
                dim = c(164,164,5),
                dimnames = list(get.vertex.attribute(allyNet2000, "vertex.names"),
                                get.vertex.attribute(allyNet2000, "vertex.names"),
-                               c("Shared Border", "Shared Partners", "Conflict Dummy", 
+                               c("Distance", "Shared Partners", "Conflict Dummy", 
                                  "Political Similarity", "Capability Ratio" )))
+saveRDS(Xevol, file = "analysis/models/Xevol.rds")
 
-
-ame_geom_evol_R2 <- ame(Y, Xdyad = Xevol, R = 2, family = "bin", symmetric = TRUE,nscan = 20000, burn = 1000)
+# AME Model: Geometric Evolution Paper Specification R = 2 ---------------------
+ame_geom_evol_R2 <- ame(Y, Xdyad = Xevol, R = 2, family = "bin", symmetric = TRUE, nscan = 20000, burn = 1000)
 saveRDS(ame_geom_evol_R2, file = "analysis/models/ame_geom_evol_R2.rds")
 
 ame_geom_evol_R2 <- readRDS(file = "analysis/models/ame_geom_evol_R2.rds")
@@ -171,7 +152,22 @@ summary(ame_geom_evol_R2)
 
 
 
+# AME Model: Geometric Evolution Paper Specification R = 3 ---------------------
+ame_geom_evol_R3 <- ame(Y, Xdyad = Xevol, R = 3, family = "bin", symmetric = TRUE, nscan = 20000, burn = 1000)
+saveRDS(ame_geom_evol_R3, file = "analysis/models/ame_geom_evol_R3.rds")
 
+ame_geom_evol_R3 <- readRDS(file = "analysis/models/ame_geom_evol_R3.rds")
+summary(ame_geom_evol_R3)
+plot(ame_geom_evol_R3)
+
+
+# AME Model: Geometric Evolution Paper Specification R = 5 ---------------------
+ame_geom_evol_R5 <- ame(Y, Xdyad = Xevol, R = 5, family = "bin", symmetric = TRUE, nscan = 20000, burn = 1000)
+saveRDS(ame_geom_evol_R5, file = "analysis/models/ame_geom_evol_R5.rds")
+  
+ame_geom_evol_R5 <- readRDS(file = "analysis/models/ame_geom_evol_R5.rds")
+summary(ame_geom_evol_R5)
+plot(ame_geom_evol_R5)
 
 
 ################################################################################
