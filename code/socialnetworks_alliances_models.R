@@ -9,7 +9,7 @@ library(tictoc)
 
 
 
-# Data Preparation Year 2000 ---------------------------------------------------
+# Data Year 2000 ---------------------------------------------------------------
 data("alliances")
 
 allyNet2000 <- allyNet[["2000"]]
@@ -21,13 +21,70 @@ countries <- colnames(contigMat)
 Y <- as.matrix.network(allyNet2000)
 
 
-# Load Geographic Distance Trade Culture Conflict ------------------------------
+# Load Distance Trade Culture Conflict -----------------------------------------
 GeoDistance <- readRDS(file = "data/GeoDistance.rds")
-GeoDistance[contigMat == 1] <- 0 
 
 TradeFlowsY2000 <- readRDS(file = "data/TradeFlowsY2000.rds")
 
 CulturalSim <- data.matrix(readRDS(file = "data/CulturalSim.rds"))
+
+Conflict <- readRDS(file = "data/Conflict.rds")
+
+
+# Nodal Covariates -------------------------------------------------------------
+list.vertex.attributes(allyNet2000)
+Xno <- cbind(get.vertex.attribute(allyNet2000, "year"),
+             get.vertex.attribute(allyNet2000, "cinc"),
+             get.vertex.attribute(allyNet2000, "polity"),
+             get.vertex.attribute(allyNet2000, "na"))
+rownames(Xno) <- get.vertex.attribute(allyNet2000, "vertex.names")
+colnames(Xno) <- c("Year", "cinc", "polity", "na")
+
+
+# Dyadic Covariates ------------------------------------------------------------
+Xdyad <- array(data = c(contigMat, lNet2000, LSP2000, warNet2000),
+               dim = c(164,164,4),
+               dimnames = list(get.vertex.attribute(allyNet2000, "vertex.names"),
+                               get.vertex.attribute(allyNet2000, "vertex.names"),
+                               c("contigMat", "lNet", "LSP", "warNet")))
+
+
+# Dyadic Covariates as in Warren 2010 ------------------------------------------
+PolSim2000 <- array(data = 0, dim = c(164, 164))
+CapRat2000 <- array(data = 0, dim = c(164, 164))
+
+sum(get.vertex.attribute(allyNet2000, "cinc")) 
+polity2000 <- get.vertex.attribute(allyNet2000, "polity")
+cinc2000 <- 100 * get.vertex.attribute(allyNet2000, "cinc") # *100: Numerical Stabilty
+
+for (i in 1:164){
+  for(j in 1:164){
+    # The Polity Index ranges from -10 to 10.
+    PolSim2000[i,j] <- (20 - abs(polity2000[i] - polity2000[j])) / 20 
+    CapRat2000[i,j] <- ifelse(cinc2000[i]/cinc2000[j] >= 1, 
+                              log(cinc2000[i]/cinc2000[j]),
+                              log(cinc2000[j]/cinc2000[i]))
+  }
+}
+
+CapRat2000[is.infinite(CapRat2000)] <- 0  # Correction for CINC = 0 Issue
+CapRat2000[is.nan(CapRat2000)] <- 0       # Correction for CINC = 0 Issue
+
+Xevol <- array(
+  data = c(GeoDistance, CulturalSim, TradeFlowsY2000, LSP2000, Conflict, PolSim2000, CapRat2000),
+  dim = c(164, 164, 7),
+  dimnames = list(
+    get.vertex.attribute(allyNet2000, "vertex.names"),
+    get.vertex.attribute(allyNet2000, "vertex.names"),
+    c("Distance", "CulturalS", "TradeF", "SharedP", "ConflictI", "PoliticalS", "CapabilityR"))
+)
+
+saveRDS(Xevol, file = "analysis/models/Xevol.rds")
+
+
+
+
+
 
 
 # ANOVA Decomposition ----------------------------------------------------------
@@ -78,15 +135,6 @@ fit_SRG <- readRDS(file = "analysis/models/SRGmodel.rds")
 summary(fit_SRG)
 
 
-# Define Nodal Covariates
-list.vertex.attributes(allyNet2000)
-Xno <- cbind(get.vertex.attribute(allyNet2000, "year"),
-             get.vertex.attribute(allyNet2000, "cinc"),
-             get.vertex.attribute(allyNet2000, "polity"),
-             get.vertex.attribute(allyNet2000, "na"))
-rownames(Xno) <- get.vertex.attribute(allyNet2000, "vertex.names")
-colnames(Xno) <- c("Year", "cinc", "polity", "na")
-
 
 # Model with added Nodal Covariates Cinc and Polity
 fit_SRRM_nodal <- ame(Y, Xrow = Xno[, 2:3], Xcol = Xno[, 2:3], family = "bin", symmetric = TRUE)
@@ -96,12 +144,7 @@ fit_SRRM_nodal <- readRDS(file = "analysis/models/fit_SRRM_nodal.rds")
 summary(fit_SRRM_nodal)
 
 
-# Define Dyadic Covariates
-Xdyad <- array(data = c(contigMat, lNet2000, LSP2000, warNet2000),
-               dim = c(164,164,4),
-               dimnames = list(get.vertex.attribute(allyNet2000, "vertex.names"),
-                               get.vertex.attribute(allyNet2000, "vertex.names"),
-                               c("contigMat", "lNet", "LSP", "warNet")))
+
 
 # Model with added Nodal Covariates Cinc and Polity + All Dyad
 fit_SRRM_nodal_dayd <- ame(Y, Xdyad = Xdyad, Xrow = Xno[, 2:3], Xcol = Xno[, 2:3], family = "bin", symmetric = TRUE)
@@ -113,73 +156,31 @@ summary(fit_SRRM_nodal)
 
 
 ################################################################################
-# AME Model: Geometric Evolution Paper Specification----------------------------
-# No Nodal Effects, Dyadic Effects 
-# Shared Border, Shared Parners, Conflict, PolSim, CapRat
-
-PolSim2000 <- array(data = 0, dim = c(164, 164))
-CapRat2000 <- array(data = 0, dim = c(164, 164))
-
-# Multiply by 100 to avoid numerical issues. 100% percentage value.
-# sum(get.vertex.attribute(allyNet2000, "cinc") almost 1.
-polity2000 <- get.vertex.attribute(allyNet2000, "polity")
-cinc2000 <- 100*get.vertex.attribute(allyNet2000, "cinc")
-
-for (i in 1:164){
-  for(j in 1:164){
-    PolSim2000[i,j] <- (20 - abs(polity2000[i] - polity2000[j])) / 20
-    CapRat2000[i,j] <- ifelse(cinc2000[i]/cinc2000[j] >= 1, 
-                              log(cinc2000[i]/cinc2000[j]),
-                              log(cinc2000[j]/cinc2000[i]))
-  }
-}
-
-# Manually correct CINC 0 Issue 
-CapRat2000[is.infinite(CapRat2000)] <- 0
-CapRat2000[is.nan(CapRat2000)] <- 0
-
-Xevol <- array(
-  data = c(GeoDistance, CulturalSim, TradeFlowsY2000, LSP2000, warNet2000, PolSim2000, CapRat2000),
-  dim = c(164, 164, 7),
-  dimnames = list(
-    get.vertex.attribute(allyNet2000, "vertex.names"),
-    get.vertex.attribute(allyNet2000, "vertex.names"),
-    c(
-      "Distance", "Cultural Similarity", "Trade Flows",
-      "Shared Partners", "Conflict Dummy",
-      "Political Similarity", "Capability Ratio"
-    )
-  )
-)
-
-saveRDS(Xevol, file = "analysis/models/Xevol.rds")
-
-
 
 # AME Model: Geometric Evolution Paper Specification R = 1 ---------------------
 ame_geom_evol_R1 <- ame(Y, Xdyad = Xevol, R = 1, family = "bin", symmetric = TRUE, nscan = 20000, burn = 1000)
 saveRDS(ame_geom_evol_R1, file = "analysis/models/ame_geom_evol_R1.rds")
 
-ame_geom_evol_R1 <- readRDS(file = "analysis/models/ame_geom_evol_R1.rds")
-summary(ame_geom_evol_R1)
+#ame_geom_evol_R1 <- readRDS(file = "analysis/models/ame_geom_evol_R1.rds")
+#summary(ame_geom_evol_R1)
 
 
 # AME Model: Geometric Evolution Paper Specification R = 2 ---------------------
 ame_geom_evol_R2 <- ame(Y, Xdyad = Xevol, R = 2, family = "bin", symmetric = TRUE, nscan = 20000, burn = 1000)
 saveRDS(ame_geom_evol_R2, file = "analysis/models/ame_geom_evol_R2.rds")
 
-ame_geom_evol_R2 <- readRDS(file = "analysis/models/ame_geom_evol_R2.rds")
-summary(ame_geom_evol_R2)
+#ame_geom_evol_R2 <- readRDS(file = "analysis/models/ame_geom_evol_R2.rds")
+#summary(ame_geom_evol_R2)
 
 
 
 # AME Model: Geometric Evolution Paper Specification R = 3 ---------------------
-ame_geom_evol_R3 <- ame(Y, Xdyad = Xevol, R = 3, family = "bin", symmetric = TRUE, nscan = 20000, burn = 1000)
-saveRDS(ame_geom_evol_R3, file = "analysis/models/ame_geom_evol_R3.rds")
+#ame_geom_evol_R3 <- ame(Y, Xdyad = Xevol, R = 3, family = "bin", symmetric = TRUE, nscan = 20000, burn = 1000)
+#saveRDS(ame_geom_evol_R3, file = "analysis/models/ame_geom_evol_R3.rds")
 
-ame_geom_evol_R3 <- readRDS(file = "analysis/models/ame_geom_evol_R3.rds")
-summary(ame_geom_evol_R3)
-plot(ame_geom_evol_R3)
+#ame_geom_evol_R3 <- readRDS(file = "analysis/models/ame_geom_evol_R3.rds")
+#summary(ame_geom_evol_R3)
+#plot(ame_geom_evol_R3)
 
 
 # AME Model: Geometric Evolution Paper Specification R = 5 ---------------------
@@ -191,8 +192,11 @@ summary(ame_geom_evol_R5)
 plot(ame_geom_evol_R5)
 
 
+
+
+
 ################################################################################
-# Time Series Data -------------------------------------------------------------
+# Longitudinal Analysis --------------------------------------------------------
 year <- c("1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1990", 
           "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000")
 Y_time <- array(data = 0, dim = c(164, 164, 19), dimnames = list(countries, countries, year))

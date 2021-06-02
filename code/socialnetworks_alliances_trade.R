@@ -49,4 +49,8 @@ TradeFlowsY2000[rownames(network), colnames(network)] <- network
 colnames(TradeFlowsY2000) <- country$cowc
 rownames(TradeFlowsY2000) <- country$cowc
 
+# Logarithmic Trade Flows. 
+TradeFlowsY2000 <- ifelse(TradeFlowsY2000 > 1, log(TradeFlowsY2000), 1) 
+any(is.na(TradeFlowsY2000))
+
 saveRDS(TradeFlowsY2000, file = "data/TradeFlowsY2000.rds")

@@ -69,4 +69,6 @@ GeoDistance <- set_units(GeoDistance, "km")
 colnames(GeoDistance) <- countries
 rownames(GeoDistance) <- countries
 
+GeoDistance[contigMat == 1] <- 0
+
 saveRDS(GeoDistance, file = "data/GeoDistance.rds")
