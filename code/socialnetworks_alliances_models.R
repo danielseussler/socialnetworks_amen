@@ -21,10 +21,13 @@ countries <- colnames(contigMat)
 Y <- as.matrix.network(allyNet2000)
 
 
-# Load Geographic Distance between Countries -----------------------------------
-GeoDistance <- readRDS(file = "analysis/models/GeoDistance.rds")
+# Load Geographic Distance Trade Culture Conflict ------------------------------
+GeoDistance <- readRDS(file = "data/GeoDistance.rds")
 GeoDistance[contigMat == 1] <- 0 
 
+TradeFlowsY2000 <- readRDS(file = "data/TradeFlowsY2000.rds")
+
+CulturalSim <- data.matrix(readRDS(file = "data/CulturalSim.rds"))
 
 
 # ANOVA Decomposition ----------------------------------------------------------
@@ -135,13 +138,31 @@ for (i in 1:164){
 CapRat2000[is.infinite(CapRat2000)] <- 0
 CapRat2000[is.nan(CapRat2000)] <- 0
 
-Xevol <- array(data = c(GeoDistance, LSP2000, warNet2000, PolSim2000, CapRat2000),
-               dim = c(164,164,5),
-               dimnames = list(get.vertex.attribute(allyNet2000, "vertex.names"),
-                               get.vertex.attribute(allyNet2000, "vertex.names"),
-                               c("Distance", "Shared Partners", "Conflict Dummy", 
-                                 "Political Similarity", "Capability Ratio" )))
+Xevol <- array(
+  data = c(GeoDistance, CulturalSim, TradeFlowsY2000, LSP2000, warNet2000, PolSim2000, CapRat2000),
+  dim = c(164, 164, 7),
+  dimnames = list(
+    get.vertex.attribute(allyNet2000, "vertex.names"),
+    get.vertex.attribute(allyNet2000, "vertex.names"),
+    c(
+      "Distance", "Cultural Similarity", "Trade Flows",
+      "Shared Partners", "Conflict Dummy",
+      "Political Similarity", "Capability Ratio"
+    )
+  )
+)
+
 saveRDS(Xevol, file = "analysis/models/Xevol.rds")
+
+
+
+# AME Model: Geometric Evolution Paper Specification R = 1 ---------------------
+ame_geom_evol_R1 <- ame(Y, Xdyad = Xevol, R = 1, family = "bin", symmetric = TRUE, nscan = 20000, burn = 1000)
+saveRDS(ame_geom_evol_R1, file = "analysis/models/ame_geom_evol_R1.rds")
+
+ame_geom_evol_R1 <- readRDS(file = "analysis/models/ame_geom_evol_R1.rds")
+summary(ame_geom_evol_R1)
+
 
 # AME Model: Geometric Evolution Paper Specification R = 2 ---------------------
 ame_geom_evol_R2 <- ame(Y, Xdyad = Xevol, R = 2, family = "bin", symmetric = TRUE, nscan = 20000, burn = 1000)
