@@ -1,74 +1,84 @@
-# Seminar of Statistical Modeling of Social Networks
-# Helper Function to determine GeoDistance between two countries, by capital.
+# Seminar on Statistical Modelling of Social Networks
+# Topic: The Additive and Multiplicative Effects Network Model
+
+# Helper Function to determine GeoDistance between two countries by capital.
 # Tutorial: https://www.r-bloggers.com/2019/10/geographic-distance/
 
-library(xergm.common)
 library(countrycode)
-library(sf)
 library(maps)
-library(units)
+library(sf)
 library(tidyverse)
+library(units)
+library(xergm.common)
+
 data("alliances")
 
 
 # Determine Capital Cities -----------------------------------------------------
-countries <- colnames(contigMat)
-country_name <- countrycode(countries,
+countrycowc <- get.vertex.attribute(allyNet[["2000"]], "vertex.names")
+countryname <- countrycode(countrycowc,
   origin = "cowc", destination = "country.name",
-  custom_match = c("GFR" = "German Federal Republic")
+  custom_match = c(
+    "GFR" = "German Federal Republic",
+    "CON" = "Congo",
+    "DRC" = "Democratic Republic of the Congo"
+  )
 )
-country_name <- data.frame( "Index" = 1:164, "Name" = country_name)
+
+former <- c("YAR", "YPR", "GFR", "GDR", "CZE")
+formerIndex <- match(former, countrycowc)
+current <- !(countrycowc %in% former)
+
+country <- data.frame( "index" = 1:sum(current), "cowc" = countrycowc[current], "name" = countryname[current])
+rm(countrycowc, countryname)
+
 
 head(world.cities)
-capitals <- world.cities %>% filter(capital == 1)
+capital <- filter(world.cities, capital == 1)
 
-country_capital <- merge(country_name, capitals,
-  by.x = "Name", by.y = "country.etc",
+countrycapital <- merge(country, capital,
+  by.x = "name", by.y = "country.etc",
   all.x = TRUE, all.y = FALSE
 )
 
 
-# Delete Duplicates
-# Manual Match
-country_capital <- country_capital[!duplicated(country_capital$Name), ]
+# Delete Duplicates Manual Match
+countrycapital <- countrycapital[!duplicated(countrycapital$name), ]
 
-missing_ind <- is.na(country_capital$name)
-country_capital[missing_ind, ]
+missingIndex <- is.na(countrycapital$name.y)
+countrycapital[missingIndex, ]
 
-missing_data <- data.frame(
-  "Name" = country_capital[missing_ind, ]$Name,
-  "name" = c(
-    "Sarajevo", "Brazzaville", "Kinshasa", "Yamoussoukro",
-    "Prague", "Prague", "Mbabane", "Suva", "Berlin", "Bonn", "Rangoon",
-    "Pyongyang", "Skopje", "Soul", "Port of Spain", "London",
-    "Washington", "San'a", "San'a", "Belgrade"
+missingdata <- data.frame(
+  "countryname" = countrycapital[missingIndex, ]$name,
+  "capital" = c(
+    "Sarajevo", "Yamoussoukro", "Prague", "Kinshasa", "Mbabane", "Suva", "Rangoon",
+    "Pyongyang", "Skopje", "Soul", "Port of Spain", "London", "Washington", "Belgrade"
   )
 )
 
-missing_cities <- world.cities %>%
-  filter(name %in% missing_data$name)
+missingcities <- world.cities %>%
+  filter(name %in% missingdata$capital)
 
-(missing_cities <- as.data.frame(missing_cities)[-c(2, 3, 8, 9, 21, 22), -2])
+missingcities <- as.data.frame(missingcities)[-c(3, 4, 15, 16), -2]
+missing <- merge(missingdata, missingcities, by.x = "capital", by.y = "name")
 
-country_capital[missing_ind, ]$name <- missing_data$name
+countrycapital[missingIndex, 4:8] <-  missing[order(missing$countryname), c(1,3,4,5,6)]
+any(is.na(countrycapital$name.y))
 
-
-country_capital[missing_ind, ] <- left_join(country_capital[missing_ind, 1:3], missing_cities,
-  by = "name")
-any(is.na(country_capital))
 
 # Compute Distance -------------------------------------------------------------
-country_capital <- country_capital %>% 
+countrycapital <- countrycapital %>% 
   st_as_sf(coords = c("long", "lat"), crs = 4326) %>%
-  arrange(Index)
+  arrange(index)
 
-GeoDistance <- st_distance(country_capital)
+GeoDistance <- st_distance(countrycapital)
 any(is.na(GeoDistance))
 
 GeoDistance <- set_units(GeoDistance, "km")
-colnames(GeoDistance) <- countries
-rownames(GeoDistance) <- countries
+colnames(GeoDistance) <- rownames(GeoDistance) <- country$cowc
 
-GeoDistance[contigMat == 1] <- 0
+
+# Case: Shared Borders ---------------------------------------------------------
+GeoDistance[contigMat[current, current] == 1] <- 0
 
 saveRDS(GeoDistance, file = "data/GeoDistance.rds")
