@@ -44,4 +44,5 @@ det(data.matrix(CulturalSim))
 
 colnames(CulturalSim) <- rownames(CulturalSim) <- countrycowc[current]
 
-saveRDS(CulturalSim, file = "data/culturalsim.rds")
+
+saveRDS(CulturalSim, file = "data/CulturalSim.rds")

@@ -33,6 +33,11 @@ countryname <- countrycode(countrycowc,
   )
 )
 
+countrycown <- countrycode(countrycowc,
+  origin = "cowc", destination = "cown",
+  custom_match = c("GFR" = 260)
+)
+
 countryregion <- countrycode(countrycowc,
   origin = "cowc", destination = "continent",
   custom_match = c(
@@ -58,6 +63,8 @@ allyNetMat <- allyNetMat[current, current]
 lNet <- lNet[current, current]
 LSP <- LSP[current, current]
 warNet <- warNet[current, current]
+contigMat <- contigMat[current, current]
+countrycown <- countrycown[current]
 countrycowc <- countrycowc[current]
 countryname <- countryname[current]
 countryregion <- countryregion[current]

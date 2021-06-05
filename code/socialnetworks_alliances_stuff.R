@@ -166,5 +166,37 @@ ggnet2(allyNet2000, size = 2, label = TRUE, layout.par = list(cell.jitter = 0.75
 
 
 
-# Using the sna helpter --------------------------------------------------------
-# install.packages("snahelper")
+
+################################################################################
+
+# Longitudinal Analysis --------------------------------------------------------
+year <- c("1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1990", 
+          "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000")
+Y_time <- array(data = 0, dim = c(164, 164, 19), dimnames = list(countries, countries, year))
+XNode_time <- array(data = 0, dim = c(164, 2, 19), dimnames = list(countries, c("cinc", "polity"), year))
+XDyad_time <- array(data = 0, dim = c(164, 164, 4, 19), dimnames = list(countries, countries, c("contigMat", "lNet", "LSP", "warNet"), year))
+
+for (yr in seq_along(year)) {
+  # Sociomatrix
+  year_char <- year[yr]
+  Y_time[, , yr] <- as.matrix.network(allyNet[[year_char]])
+  
+  # Nodal Covariates
+  XNode_time[, , yr] <- cbind(
+    get.vertex.attribute(allyNet[[year_char]], "cinc"),
+    get.vertex.attribute(allyNet[[year_char]], "polity")
+  )
+  
+  # Dyadic Covariates
+  XDyad_time[, , , yr] <- array(data = c(contigMat, lNet[[year_char]], LSP[[year_char]], warNet[[year_char]]),
+                                dim = c(164, 164, 4))
+}
+
+
+
+# AME model replicated relational data -----------------------------------------
+tic("Largest Model so far:")
+fit_AME_Rep_R3 <- ame_rep(Y_time, Xdyad = XDyad_time, Xrow = XNode_time, Xcol = XNode_time,
+                          R= 2, family = "bin", symmetric = TRUE)
+toc()
+saveRDS(fit_AME_Rep_R3, file = "analysis/models/fit_AME_Rep_R3.rds")

@@ -28,4 +28,4 @@ table(conflict)
 
 conflict <- ifelse(conflict > 0, 1, 0)
 
-saveRDS(conflict, file = "data/conflict.rds")
+saveRDS(conflict, file = "data/Conflict.rds")
