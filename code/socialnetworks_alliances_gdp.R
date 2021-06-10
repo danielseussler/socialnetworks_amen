@@ -37,17 +37,24 @@ current <- !(countrycowc %in% former)
 
 
 # World Development Indicators - World Bank ------------------------------------
-WDIsearch('gdp.*capita.*constant')
-data = WDI(indicator='NY.GDP.PCAP.KD', country = "all", start = 1981, end = 2000)
+# WDIsearch(string = "gdp")
+WDIsearch('gdp.*constant')
+
+# use NY.GDP.MKTP.CD for GDP current US$
+# use NY.GDP.PCAP.CD for GDP per capita current US$
+
+data = WDI(indicator = 'NY.GDP.PCAP.CD', country = "all", start = 1981, end = 2000)
 
 data <- data %>%
   filter(year == 2000) %>%
-  select(iso2c, NY.GDP.PCAP.KD)  
+  select(iso2c, NY.GDP.PCAP.CD)
 
 GDP <- merge(country[current, ], data, by = "iso2c", all.x = TRUE)
-GDP[is.na(GDP$NY.GDP.PCAP.KD), "NY.GDP.PCAP.KD"] <- 1
-GDP[, "NY.GDP.PCAP.KD"] <- log(GDP[, "NY.GDP.PCAP.KD"])
-GDP <- GDP[order(GDP$index), c("cowc", "NY.GDP.PCAP.KD")]
+
+# Impute NA Values with 0 
+GDP[is.na(GDP$NY.GDP.PCAP.KD), "NY.GDP.PCAP.CD"] <- 1
+GDP[, "NY.GDP.PCAP.CD"] <- log(GDP[, "NY.GDP.PCAP.CD"])
+GDP <- GDP[order(GDP$index), c("cowc", "NY.GDP.PCAP.CD")]
 head(GDP)
 rownames(GDP) <- NULL
 GDP <- column_to_rownames(GDP, var = "cowc")

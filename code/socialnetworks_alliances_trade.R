@@ -4,9 +4,14 @@
 # Trade Flows
 # Data: https://correlatesofwar.org/data-sets/bilateral-trade
 
+# GDP 
+# Data: World Development Indicators
+
 library(countrycode)
 library(igraph)
 library(tidyverse)
+library(scales)
+library(WDI)
 library(xergm.common)
 
 
@@ -24,10 +29,19 @@ countryname <- countrycode(countrycowc,
   )
 )
 
+countryiso2c <- countrycode(countrycowc,
+  origin = "cowc", destination = "iso2c",
+  custom_match = c("CZE", "GDR", "GFR", "YAR", "YPR", "YUG" = "YU")
+)
+
 countrycown <- countrycode(countrycowc,
   origin = "cowc", destination = "cown",
   custom_match = c("GFR" = 260)
 )
+
+country <- data.frame("index" = 1:164,
+                      "iso2c" = countryiso2c, 
+                      "cowc" = countrycowc)
 
 former <- c("YAR", "YPR", "GFR", "GDR", "CZE")
 formerIndex <- match(former, countrycowc)
@@ -58,12 +72,67 @@ tradematrix <- matrix(data = 0, nrow = sum(current), ncol = sum(current), dimnam
 index <- match(countrycown[current], colnames(network))
 tradematrix <- network[index, index]
 
-any(tradematrix < 1) 
+any(tradematrix < 0) 
 any(is.na(tradematrix))
 
-tradematrix <- ifelse(tradematrix > 1, log(tradematrix), 0)
-any(is.na(tradematrix))
+# Impute missing and negative values 
+tradematrix[is.na(tradematrix)] <- 0
+tradematrix[tradematrix < 0] <- 0
 
 colnames(tradematrix) <- rownames(tradematrix) <- countrycowc[current]
 
-saveRDS(tradematrix, file = "data/TradeFlows.rds")
+
+
+# World Development Indicators - World Bank ------------------------------------
+# WDIsearch(string = "gdp")
+WDIsearch('gdp.*constant')
+
+# use NY.GDP.MKTP.CD for GDP current US$
+# use NY.GDP.PCAP.CD for GDP per capita current US$
+data = WDI(indicator = 'NY.GDP.MKTP.CD', country = "all", start = 1981, end = 2000)
+
+data <- data %>%
+  filter(year == 2000) %>%
+  select(iso2c, NY.GDP.MKTP.CD)
+
+GDP <- merge(country[current, ], data, by = "iso2c", all.x = TRUE)
+
+# Impute NA Values with 1
+any(is.na(GDP))
+GDP[is.na(GDP)] <- 0
+
+GDP <- GDP[order(GDP$index), c("cowc", "NY.GDP.MKTP.CD")]
+head(GDP)
+rownames(GDP) <- NULL
+GDP <- column_to_rownames(GDP, var = "cowc")
+
+
+
+# Calculate economic dependence
+# COW Trade Data is in US millions of current dollars
+EconomicDep <- matrix(0, nrow = sum(current), ncol = sum(current))
+  
+for (i in 1:sum(current)) {
+  for (j in 1:sum(current)) {
+    if (GDP[i, ] == 0 || GDP[j, ] == 0) {
+      EconomicDep[i, j] <- 0
+    } else {
+      EconomicDep[i, j] <- min(tradematrix[i, j] * 1000000 / GDP[i, ], tradematrix[i, j] * 1000000 / GDP[j, ])
+    }
+  }
+}
+
+any(is.na(EconomicDep))
+any(is.infinite(EconomicDep))
+EconomicDep[is.na(EconomicDep)] <- 0
+
+colnames(EconomicDep) <- rownames(EconomicDep) <- countrycowc[current]
+
+min(EconomicDep)
+max(EconomicDep)
+EconomicDep <- EconomicDep*100
+
+# Economic Trade Dependency for US Partners
+plot(EconomicDep[1, ])
+
+saveRDS(tradematrix, file = "data/EconomicDep.rds")
