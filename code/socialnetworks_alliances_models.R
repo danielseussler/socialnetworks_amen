@@ -1,10 +1,12 @@
 # Seminar on Statistical Modelling of Social Networks
 # Topic: The Additive and Multiplicative Effects Network Model
-# Daniel A. Seussler Becerra
+# Models
 
 library(amen)
+library(bayesplot)
 library(network)
 library(statnet)
+library(scales)
 library(tictoc)
 library(xergm.common)
 
@@ -38,12 +40,14 @@ cinc <- get.vertex.attribute(allyNet, "cinc")[current] * 100
 polity <- get.vertex.attribute(allyNet, "polity")[current]
 
 
+
 # Load Distance Trade Culture Conflict -----------------------------------------
 GeoDistance <- readRDS(file = "data/GeoDistance.rds")
-TradeFlows <- readRDS(file = "data/TradeFlows.rds")
+EconomicDep <- readRDS(file = "data/EconomicDep.rds")
 CulturalSim <- readRDS(file = "data/CulturalSim.rds")
-ConflictInd <- readRDS(file = "data/Conflict.rds")
+ConflictInd <- readRDS(file = "data/ConflictInd.rds")
 logGDP <- readRDS(file = "data/logGDP.rds")
+
 
 
 # Nodal Covariates -------------------------------------------------------------
@@ -73,7 +77,8 @@ sum(get.vertex.attribute(allyNet, "cinc"))
 for (i in 1:sum(current)) {
   for (j in 1:sum(current)) {
     # The Polity Index ranges from -10 to 10.
-    PoliticalSim[i, j] <- (20 - abs(polity[i] - polity[j])) / 20
+    # PoliticalSim[i, j] <- (20 - abs(polity[i] - polity[j])) / 20
+    PoliticalSim[i, j] <- abs(polity[i] - polity[j])
 
     CapabilityRat[i, j] <- ifelse(cinc[i] / cinc[j] >= 1,
       log(cinc[i] / cinc[j]),
@@ -86,26 +91,36 @@ CapabilityRat[is.infinite(CapabilityRat)] <- 0 # Correction for CINC = 0 Issue
 CapabilityRat[is.nan(CapabilityRat)] <- 0
 
 
+# Scale Covariates -------------------------------------------------------------
+# GeoDistance <- apply(GeoDistance, 2, rescale, to = c(0, 10), from = c(0, max(GeoDistance)))
+GeoDistance <- log(GeoDistance + 1)
+
 
 # Dyadic Covariates ------------------------------------------------------------
 Xdyad <- array(
-  data = c(GeoDistance, CulturalSim, TradeFlows, LSP, 
-           lNet, ConflictInd, PoliticalSim, CapabilityRat),
+  data = c(
+    GeoDistance, CulturalSim, EconomicDep, LSP,
+    lNet, ConflictInd, PoliticalSim, CapabilityRat
+  ),
   dim = c(sum(current), sum(current), 8),
-  dimnames = list(countrycowc, countrycowc, 
-                  c("GeoDistance", "CulturalSim", "TradeFlows", "SharedAllies", 
-                    "LatentNet", "ConflictInd", "PoliticalSim", "CapabilityRat"))
+  dimnames = list(
+    countrycowc, countrycowc,
+    c(
+      "GeoDistance", "CulturalSim", "EconomicDep", "SharedAllies",
+      "LatentNet", "ConflictInd", "PoliticalSim", "CapabilityRat"
+    )
+  )
 )
 
 
 # Preliminary Modeling ---------------------------------------------------------
-# ANOVA Decomposition 
+# ANOVA Decomposition
 Rowcountry <- matrix(rownames(Y), nrow(Y), ncol(Y))
 Colcountry <- t(Rowcountry)
 
 anova(lm(c(Y) ~ c(Rowcountry) + c(Colcountry)))
 
-  # Check Model Assumptions Indicates a large degree of heterogeneity, more as if a_i or b_i were all zero.
+# Check Model Assumptions Indicates a large degree of heterogeneity, more as if a_i or b_i were all zero.
 
 
 rmean <- rowMeans(Y, na.rm = TRUE)
@@ -129,86 +144,96 @@ cor(c(R), c(t(R)), use = "complete")
 
 
 
-# The Social Relations Model ---------------------------------------------------
-fit_SRM <- ame(Y, family = "bin", symmetric = TRUE)
-saveRDS(fit_SRM, file = "analysis/models/SRMmodel.rds")
+# Model Comparison -------------------------------------------------------------
 
-fit_SRM <- readRDS(file = "analysis/models/SRMmodel.rds")
-summary(fit_SRM)
-
-
-# Reduced Model that lacks SRM terms of column effects
-fit_SRG <- ame(Y, family = "bin", symmetric = TRUE, rvar = FALSE, cvar = FALSE, dcor = FALSE)
-saveRDS(fit_SRG, file = "analysis/models/SRGmodel.rds")
-
-fit_SRG <- readRDS(file = "analysis/models/SRGmodel.rds")
-summary(fit_SRG)
+# AME
+fitZNII0H <- ame(allyNetMat,
+  Xrow = logGDP, Xcol = logGDP,
+  Xdyad = Xdyad[, , -5], R = 2, family = "bin", symmetric = TRUE,
+  rvar = FALSE, cvar = FALSE, nvar = TRUE,
+  nscan = 100000, burn = 10000, odens = 100
+)
+saveRDS(fitZNII0H, file = "analysis/models/fitZNII0H.rds")
+fitZNII0H <- readRDS(file = "analysis/models/fitZNII0H.rds")
 
 
-
-# Model with added Nodal Covariates Cinc and Polity
-fit_SRRM_nodal <- ame(Y, Xrow = Xno[, 2:3], Xcol = Xno[, 2:3], family = "bin", symmetric = TRUE)
-saveRDS(fit_SRRM_nodal, file = "analysis/models/fit_SRRM_nodal.rds")
-
-fit_SRRM_nodal <- readRDS(file = "analysis/models/fit_SRRM_nodal.rds")
-summary(fit_SRRM_nodal)
-
-
-
-
-# Model with added Nodal Covariates Cinc and Polity + All Dyad
-fit_SRRM_nodal_dayd <- ame(Y, Xdyad = Xdyad, Xrow = Xno[, 2:3], Xcol = Xno[, 2:3], family = "bin", symmetric = TRUE)
-saveRDS(fit_SRRM_nodal_dayd, file = "analysis/models/fit_SRRM_nodal_dayd.rds")
-
-fit_SRRM_nodal <- readRDS(file = "analysis/models/fit_SRRM_nodal.rds")
-summary(fit_SRRM_nodal)
+# AME without multiplicative effects (SRM Model)
+fitCPLTUK <- ame(allyNetMat,
+   Xrow = logGDP, Xcol = logGDP,
+  Xdyad = Xdyad[, , -5], R = 0, family = "bin", symmetric = TRUE,
+  rvar = FALSE, cvar = FALSE, nvar = TRUE,
+  nscan = 100000, burn = 10000, odens = 100
+)
+saveRDS(fitCPLTUK, file = "analysis/models/fitCPLTUK.rds")
+fitCPLTUK <- readRDS(file = "analysis/models/fitCPLTUK.rds")
 
 
-
-################################################################################
-
-# AME Model: Full Specification with Intercept Rank 1
-fitAMER1 <- ame(allyNetMat, Xrow = Xnode[ , c("logGDP", "cinc")], Xcol = Xnode[, c("logGDP", "cinc")], 
-                Xdyad = Xdyad[ , , -5], R = 1, family = "bin", symmetric = TRUE, 
-                nscan = 100000, burn = 10000, odens = 100)
-saveRDS(fitAMER1, file = "analysis/models/fitAMER1.rds")
-
-
-
+# AME without additive effects
+fitX7XDFO <- ame(allyNetMat,
+  Xrow = logGDP, Xcol = logGDP,
+  Xdyad = Xdyad[, , -5], R = 2, family = "bin", symmetric = TRUE,
+  rvar = FALSE, cvar = FALSE, nvar = FALSE,
+  nscan = 100000, burn = 10000, odens = 100
+)
+saveRDS(fitX7XDFO, file = "analysis/models/fitX7XDFO.rds")
+fitX7XDFO <- readRDS(file = "analysis/models/fitX7XDFO.rds")
 
 
+# AME without multiplicative and additive effects (Classical Regression)
+fitDASD8R <- ame(allyNetMat,
+  Xrow = logGDP, Xcol = logGDP,
+  Xdyad = Xdyad[, , -5], R = 0, family = "bin", symmetric = TRUE,
+  rvar = FALSE, cvar = FALSE, nvar = FALSE,
+  nscan = 100000, burn = 10000, odens = 100
+)
+saveRDS(fitDASD8R, file = "analysis/models/fitDASD8R.rds")
+fitDASD8R <- readRDS(file = "analysis/models/fitDASD8R.rds")
 
 
-# AME Model: Full Specification without Intercept Rank 1
-fitAMER1noI <- ame(allyNetMat, Xrow = Xnode[ , c("logGDP", "cinc")], Xcol = Xnode[, c("logGDP", "cinc")],
-                Xdyad = Xdyad[ , , -5], R = 1, family = "bin", symmetric = TRUE, 
-                intercept = FALSE, nscan = 100000, burn = 10000, odens = 100)
-saveRDS(fitAMER1noI, file = "analysis/models/fitAMER1noI.rds")
+# Extended: R5 Improvement?
+fitIQD1Q2 <- ame(allyNetMat,
+  Xrow = Xnode[, c("logGDP")], Xcol = Xnode[, c("logGDP")],
+  Xdyad = Xdyad[, , -5], R = 5, family = "bin", symmetric = TRUE,
+  rvar = FALSE, cvar = FALSE, nvar = TRUE,
+  nscan = 100000, burn = 10000, odens = 100
+)
+saveRDS(fitIQD1Q2, file = "analysis/models/fitIQD1Q2.rds")
+fitIQD1Q2 <- readRDS(file = "analysis/models/fitIQD1Q2.rds")
+
+
+# Extended: Does dropping covariates yield different estimates?
+fitEQNO0V <- ame(allyNetMat,
+  Xrow = Xnode[, c("logGDP")], Xcol = Xnode[, c("logGDP")],
+  Xdyad = Xdyad[, , c(1, 3, 7, 8)], R = 2, family = "bin", symmetric = TRUE,
+  rvar = FALSE, cvar = FALSE, nvar = TRUE,
+  intercept = TRUE, nscan = 100000, burn = 10000, odens = 100
+)
+saveRDS(fitEQNO0V, file = "analysis/models/fitEQNO0V.rds")
+fitEQNO0V <- readRDS(file = "analysis/models/fitEQNO0V.rds")
 
 
 
+# Final Results
+library(foreach)
+library(doParallel)
+
+numCores <- detectCores()
+registerDoParallel(numCores) # use multicore, set to the number of our cores
 
 
+tic("Parralel Approach")
+fitAME <- foreach(i = 1:4, .packages='amen') %dopar% ame(allyNetMat,
+  Xrow = Xnode[, c("logGDP", "cinc")], Xcol = Xnode[, c("logGDP", "cinc")],
+  Xdyad = Xdyad[, , -c(4, 5)], R = 2, family = "bin", symmetric = TRUE,
+  rvar = FALSE, cvar = FALSE, nvar = TRUE,
+  nscan = 10, burn = 1000, odens = 100, seed = i
+)
+tic("1/4 the load single")
+fittrash <- ame(allyNetMat,
+                Xrow = Xnode[, c("logGDP", "cinc")], Xcol = Xnode[, c("logGDP", "cinc")],
+                Xdyad = Xdyad[, , -c(4, 5)], R = 2, family = "bin", symmetric = TRUE,
+                rvar = FALSE, cvar = FALSE, nvar = TRUE,
+                nscan = 10, burn = 1000, odens = 100)
 
+toc()
 
-
-
-
-# Modified summary function of amen package to output a table ------------------
-table_ame <- function(object, ...){ 
-  fit <- object
-  tmp <- cbind(
-    apply(fit$BETA, 2, mean), apply(fit$BETA, 2, sd),
-    apply(fit$BETA, 2, mean) / apply(fit$BETA, 2, sd),
-    2 * (1 - pnorm(abs(apply(fit$BETA, 2, mean) / apply(fit$BETA, 2, sd))))
-  )
-  colnames(tmp) <- c("pmean", "psd", "z-stat", "p-val")
-  out <- round(tmp, 4)
-  
-  
-  tmp <- cbind(apply(fit$VC, 2, mean), apply(fit$VC, 2, sd))
-  tmp <- cbind(round(tmp, 4), array("-", dim = c(nrow(tmp), 2)))
-
-  out <- rbind(out, tmp)
-  return(out)
-} 

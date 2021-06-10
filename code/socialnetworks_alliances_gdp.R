@@ -58,5 +58,5 @@ GDP <- GDP[order(GDP$index), c("cowc", "NY.GDP.PCAP.CD")]
 head(GDP)
 rownames(GDP) <- NULL
 GDP <- column_to_rownames(GDP, var = "cowc")
-
-saveRDS(GDP, file = "data/logGDP.rds")
+colnames(GDP) <- "GDP (log p.c.)"
+saveRDS(as.matrix(GDP), file = "data/logGDP.rds")
