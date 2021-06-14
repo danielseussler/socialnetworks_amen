@@ -135,4 +135,4 @@ EconomicDep <- EconomicDep*100
 # Economic Trade Dependency for US Partners
 plot(EconomicDep[1, ])
 
-saveRDS(tradematrix, file = "data/EconomicDep.rds")
+saveRDS(EconomicDep, file = "data/EconomicDep.rds")

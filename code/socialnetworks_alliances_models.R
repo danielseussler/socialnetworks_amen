@@ -115,10 +115,10 @@ Xdyad <- array(
 
 # Preliminary Modeling ---------------------------------------------------------
 # ANOVA Decomposition
-Rowcountry <- matrix(rownames(Y), nrow(Y), ncol(Y))
+Rowcountry <- matrix(rownames(allyNetMat), nrow(allyNetMat), ncol(allyNetMat))
 Colcountry <- t(Rowcountry)
 
-anova(lm(c(Y) ~ c(Rowcountry) + c(Colcountry)))
+anova(lm(c(allyNetMat) ~ c(Rowcountry) + c(Colcountry)))
 
 # Check Model Assumptions Indicates a large degree of heterogeneity, more as if a_i or b_i were all zero.
 
@@ -192,7 +192,7 @@ fitDASD8R <- readRDS(file = "analysis/models/fitDASD8R.rds")
 
 # Extended: R5 Improvement?
 fitIQD1Q2 <- ame(allyNetMat,
-  Xrow = Xnode[, c("logGDP")], Xcol = Xnode[, c("logGDP")],
+  Xrow = logGDP, Xcol = logGDP,
   Xdyad = Xdyad[, , -5], R = 5, family = "bin", symmetric = TRUE,
   rvar = FALSE, cvar = FALSE, nvar = TRUE,
   nscan = 100000, burn = 10000, odens = 100
@@ -201,16 +201,56 @@ saveRDS(fitIQD1Q2, file = "analysis/models/fitIQD1Q2.rds")
 fitIQD1Q2 <- readRDS(file = "analysis/models/fitIQD1Q2.rds")
 
 
-# Extended: Does dropping covariates yield different estimates?
+# Extended: R5 Improvement? Only ME
+fitWIBWVH <- ame(allyNetMat,
+  Xrow = logGDP, Xcol = logGDP,
+  Xdyad = Xdyad[, , -5], R = 5, family = "bin", symmetric = TRUE,
+  rvar = FALSE, cvar = FALSE, nvar = FALSE,
+  nscan = 100000, burn = 10000, odens = 100
+)
+saveRDS(fitWIBWVH, file = "analysis/models/fitWIBWVH.rds")
+fitWIBWVH <- readRDS(file = "analysis/models/fitWIBWVH.rds")
+
+
+# Extended: Does dropping covariates yield different estimates? Drop all except GDP ECON DIST POLITY CAP
+fitGIPKVP <- ame(allyNetMat,
+  Xdyad = Xdyad[, , c(1, 3, 7, 8)], R = 2, family = "bin", symmetric = TRUE,
+  rvar = FALSE, cvar = FALSE, nvar = TRUE,
+  intercept = TRUE, nscan = 100000, burn = 10000, odens = 100
+)
+saveRDS(fitGIPKVP, file = "analysis/models/fitGIPKVP.rds")
+fitGIPKVP <- readRDS(file = "analysis/models/fitGIPKVP.rds")
+
+
+# Extended: Does dropping the intercept improve mcmc estiamtion?
+fitFVAEMT <- ame(allyNetMat,
+  Xrow = logGDP, Xcol = logGDP,
+  Xdyad = Xdyad[, , -5], R = 2, family = "bin", symmetric = TRUE,
+  rvar = FALSE, cvar = FALSE, nvar = TRUE, intercept = FALSE,
+  nscan = 100000, burn = 10000, odens = 100
+)
+saveRDS(fitFVAEMT, file = "analysis/models/fitFVAEMT.rds")
+fitFVAEMT <- readRDS(file = "analysis/models/fitFVAEMT.rds")
+
+
+# Extended: Drop all covariates
+fitSIXQ7Y <- ame(allyNetMat, R = 2, family = "bin", symmetric = TRUE,
+                 rvar = FALSE, cvar = FALSE, nvar = TRUE, 
+                 nscan = 100000, burn = 10000, odens = 100
+)
+saveRDS(fitSIXQ7Y, file = "analysis/models/fitSIXQ7Y.rds")
+fitSIXQ7Y <- readRDS(file = "analysis/models/fitSIXQ7Y.rds")
+
+
+# Extended: Does dropping covariates yield different estimates? Drop SharedAllies ConflictInd
 fitEQNO0V <- ame(allyNetMat,
   Xrow = Xnode[, c("logGDP")], Xcol = Xnode[, c("logGDP")],
-  Xdyad = Xdyad[, , c(1, 3, 7, 8)], R = 2, family = "bin", symmetric = TRUE,
+  Xdyad = Xdyad[, , c(1, 2, 3, 7, 8)], R = 2, family = "bin", symmetric = TRUE,
   rvar = FALSE, cvar = FALSE, nvar = TRUE,
   intercept = TRUE, nscan = 100000, burn = 10000, odens = 100
 )
 saveRDS(fitEQNO0V, file = "analysis/models/fitEQNO0V.rds")
 fitEQNO0V <- readRDS(file = "analysis/models/fitEQNO0V.rds")
-
 
 
 # Final Results
