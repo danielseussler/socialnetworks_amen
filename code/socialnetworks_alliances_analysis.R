@@ -55,7 +55,7 @@ head(cbind(countrycowc, countryname, countryregion))
 
 
 # Drop former countries 
-former <- c("YAR", "YPR", "GFR", "GDR", "CZE")
+former <- c("YAR", "YPR", "GFR", "GDR", "CZE", "YUG")
 any(allyNetMat[former, former] == 1)
 
 formerIndex <- match(former, countrycowc)
@@ -112,7 +112,7 @@ sd.colmean <- sd.rowmean<-sd(rowMeans(allyNetMat,na.rm=TRUE) ,na.rm=TRUE)
 
 ## Set Colors ----------------------------------------------------------
 col <- character(length = length(countryregion))
-display.brewer.pal(n = 5, name = 'Blues')
+# display.brewer.pal(n = 5, name = 'Blues')
 # col[countryregion == "Europe"] <- brewer.pal(5, "Blues")[1]
 # col[countryregion == "Asia"] <- brewer.pal(5, "Blues")[2]
 # col[countryregion == "Oceania"] <- brewer.pal(5, "Blues")[3]
@@ -185,6 +185,7 @@ fitDASD8R <- readRDS(file = "analysis/models/fitDASD8R.rds") # No Effects
 fitIQD1Q2 <- readRDS(file = "analysis/models/fitIQD1Q2.rds") # AME R=5
 fitWIBWVH <- readRDS(file = "analysis/models/fitWIBWVH.rds") # ME R=5
 fitFVAEMT <- readRDS(file = "analysis/models/fitFVAEMT.rds") # AME R=2 Drop Intercept
+
 
 fitGIPKVP <- readRDS(file = "analysis/models/fitGIPKVP.rds") # AME Drop all except GDP ECON DIST POLITY CAP
 fitEQNO0V <- readRDS(file = "analysis/models/fitEQNO0V.rds") # AME drop SharedA Conflict

@@ -31,7 +31,7 @@ country <- data.frame("index" = 1:164,
                       "iso2c" = countryiso2c, 
                       "cowc" = countrycowc)
 
-former <- c("YAR", "YPR", "GFR", "GDR", "CZE")
+former <- c("YAR", "YPR", "GFR", "GDR", "CZE", "YUG")
 formerIndex <- match(former, countrycowc)
 current <- !(countrycowc %in% former)
 
@@ -51,12 +51,17 @@ data <- data %>%
 
 GDP <- merge(country[current, ], data, by = "iso2c", all.x = TRUE)
 
-# Impute NA Values with 0 
-GDP[is.na(GDP$NY.GDP.PCAP.KD), "NY.GDP.PCAP.CD"] <- 1
+
+# Impute NA Values with data from https://countryeconomy.com/
+GDP[is.na(GDP$NY.GDP.PCAP.CD), ] 
+GDP[is.na(GDP$NY.GDP.PCAP.CD), "NY.GDP.PCAP.CD"] <- c(170, 1100, 463, 231,  14908 )
+
+
 GDP[, "NY.GDP.PCAP.CD"] <- log(GDP[, "NY.GDP.PCAP.CD"])
 GDP <- GDP[order(GDP$index), c("cowc", "NY.GDP.PCAP.CD")]
 head(GDP)
 rownames(GDP) <- NULL
 GDP <- column_to_rownames(GDP, var = "cowc")
 colnames(GDP) <- "GDP (log p.c.)"
+
 saveRDS(as.matrix(GDP), file = "data/logGDP.rds")

@@ -24,7 +24,7 @@ countrycowc <- get.vertex.attribute(allyNet, "vertex.names")
 
 
 # Drop former countries 
-former <- c("YAR", "YPR", "GFR", "GDR", "CZE")
+former <- c("YAR", "YPR", "GFR", "GDR", "CZE", "YUG")
 formerIndex <- match(former, countrycowc)
 current <- !(countrycowc %in% former)
 
@@ -36,10 +36,11 @@ warNet <- warNet[current, current]
 contigMat <- contigMat[current, current]
 countrycowc <- countrycowc[current]
 
-cinc <- get.vertex.attribute(allyNet, "cinc")[current] * 100
-polity <- get.vertex.attribute(allyNet, "polity")[current]
+cinc <- get.vertex.attribute(allyNet, "cinc") * 100
+polity <- get.vertex.attribute(allyNet, "polity")
 
-
+any(is.na(cinc))
+any(is.na(polity))
 
 # Load Distance Trade Culture Conflict -----------------------------------------
 GeoDistance <- readRDS(file = "data/GeoDistance.rds")
@@ -52,8 +53,6 @@ logGDP <- readRDS(file = "data/logGDP.rds")
 
 # Nodal Covariates -------------------------------------------------------------
 list.vertex.attributes(allyNet)
-cinc[is.na(cinc)] <- 0 # Missing Data imputation?
-polity[is.na(polity)] <- 0
 
 Xnode <- array(
   data = c(as.matrix(logGDP), cinc, polity),
@@ -74,6 +73,10 @@ CapabilityRat <- array(data = 0, dim = c(sum(current), sum(current)))
 
 sum(get.vertex.attribute(allyNet, "cinc"))
 
+# catch cinc = 0 issue with imputing the average of 0 and the second lowest
+table(cinc)[2]
+cinc[cinc == 0] <- 0.0013/2
+
 for (i in 1:sum(current)) {
   for (j in 1:sum(current)) {
     # The Polity Index ranges from -10 to 10.
@@ -87,8 +90,11 @@ for (i in 1:sum(current)) {
   }
 }
 
-CapabilityRat[is.infinite(CapabilityRat)] <- 0 # Correction for CINC = 0 Issue
-CapabilityRat[is.nan(CapabilityRat)] <- 0
+any(is.infinite(CapabilityRat))
+any(is.nan(CapabilityRat))
+
+any(is.infinite(PoliticalSim))
+any(is.nan(PoliticalSim))
 
 
 # Scale Covariates -------------------------------------------------------------
@@ -190,6 +196,10 @@ saveRDS(fitDASD8R, file = "analysis/models/fitDASD8R.rds")
 fitDASD8R <- readRDS(file = "analysis/models/fitDASD8R.rds")
 
 
+
+
+# Model Analysis Extended-------------------------------------------------------
+
 # Extended: R5 Improvement?
 fitIQD1Q2 <- ame(allyNetMat,
   Xrow = logGDP, Xcol = logGDP,
@@ -253,27 +263,5 @@ saveRDS(fitEQNO0V, file = "analysis/models/fitEQNO0V.rds")
 fitEQNO0V <- readRDS(file = "analysis/models/fitEQNO0V.rds")
 
 
-# Final Results
-library(foreach)
-library(doParallel)
 
-numCores <- detectCores()
-registerDoParallel(numCores) # use multicore, set to the number of our cores
-
-
-tic("Parralel Approach")
-fitAME <- foreach(i = 1:4, .packages='amen') %dopar% ame(allyNetMat,
-  Xrow = Xnode[, c("logGDP", "cinc")], Xcol = Xnode[, c("logGDP", "cinc")],
-  Xdyad = Xdyad[, , -c(4, 5)], R = 2, family = "bin", symmetric = TRUE,
-  rvar = FALSE, cvar = FALSE, nvar = TRUE,
-  nscan = 10, burn = 1000, odens = 100, seed = i
-)
-tic("1/4 the load single")
-fittrash <- ame(allyNetMat,
-                Xrow = Xnode[, c("logGDP", "cinc")], Xcol = Xnode[, c("logGDP", "cinc")],
-                Xdyad = Xdyad[, , -c(4, 5)], R = 2, family = "bin", symmetric = TRUE,
-                rvar = FALSE, cvar = FALSE, nvar = TRUE,
-                nscan = 10, burn = 1000, odens = 100)
-
-toc()
 

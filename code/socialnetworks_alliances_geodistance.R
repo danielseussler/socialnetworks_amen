@@ -25,7 +25,7 @@ countryname <- countrycode(countrycowc,
   )
 )
 
-former <- c("YAR", "YPR", "GFR", "GDR", "CZE")
+former <- c("YAR", "YPR", "GFR", "GDR", "CZE", "YUG")
 formerIndex <- match(former, countrycowc)
 current <- !(countrycowc %in% former)
 
@@ -52,19 +52,23 @@ missingdata <- data.frame(
   "countryname" = countrycapital[missingIndex, ]$name,
   "capital" = c(
     "Sarajevo", "Yamoussoukro", "Prague", "Kinshasa", "Mbabane", "Suva", "Rangoon",
-    "Pyongyang", "Skopje", "Soul", "Port of Spain", "London", "Washington", "Belgrade"
+    "Pyongyang", "Skopje", "Soul", "Port of Spain", "London", "Washington"
   )
 )
 
 missingcities <- world.cities %>%
   filter(name %in% missingdata$capital)
 
-missingcities <- as.data.frame(missingcities)[-c(3, 4, 15, 16), -2]
+missingcities
+
+missingcities <- as.data.frame(missingcities)[-c(2, 3, 14, 15), -2]
 missing <- merge(missingdata, missingcities, by.x = "capital", by.y = "name")
 
+countrycapital[missingIndex, 1:8]
 countrycapital[missingIndex, 4:8] <-  missing[order(missing$countryname), c(1,3,4,5,6)]
 any(is.na(countrycapital$name.y))
 
+any(is.na(countrycapital$lat))
 
 # Compute Distance -------------------------------------------------------------
 countrycapital <- countrycapital %>% 

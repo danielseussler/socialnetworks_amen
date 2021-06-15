@@ -27,7 +27,7 @@ countrycown <- countrycode(countrycowc,
   custom_match = c("GFR" = 260)
 )
 
-former <- c("YAR", "YPR", "GFR", "GDR", "CZE")
+former <- c("YAR", "YPR", "GFR", "GDR", "CZE", "YUG")
 formerIndex <- match(former, countrycowc)
 current <- !(countrycowc %in% former)
 

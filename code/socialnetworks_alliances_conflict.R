@@ -2,9 +2,8 @@
 # Topic: The Additive and Multiplicative Effects Network Model
 # Create conflict indicator
 
-library(xergm.common)
 library(network)
-
+library(xergm.common)
 
 # Data Setup
 data("alliances")
@@ -13,7 +12,7 @@ countrycowc <- get.vertex.attribute(allyNet[["2000"]], "vertex.names")
 year <- c("1981", "1982", "1983", "1984", "1985", "1986", "1987", "1988", "1990", 
           "1991", "1992", "1993", "1994", "1995", "1996", "1997", "1998", "1999", "2000")
 
-former <- c("YAR", "YPR", "GFR", "GDR", "CZE")
+former <- c("YAR", "YPR", "GFR", "GDR", "CZE", "YUG")
 current <- !(countrycowc %in% former)
 
 

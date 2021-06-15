@@ -43,7 +43,7 @@ country <- data.frame("index" = 1:164,
                       "iso2c" = countryiso2c, 
                       "cowc" = countrycowc)
 
-former <- c("YAR", "YPR", "GFR", "GDR", "CZE")
+former <- c("YAR", "YPR", "GFR", "GDR", "CZE", "YUG")
 formerIndex <- match(former, countrycowc)
 current <- !(countrycowc %in% former)
 
@@ -75,9 +75,8 @@ tradematrix <- network[index, index]
 any(tradematrix < 0) 
 any(is.na(tradematrix))
 
-# Impute missing and negative values 
-tradematrix[is.na(tradematrix)] <- 0
-tradematrix[tradematrix < 0] <- 0
+# Impute negative values
+tradematrix[tradematrix < 0] <- 1
 
 colnames(tradematrix) <- rownames(tradematrix) <- countrycowc[current]
 
@@ -97,9 +96,10 @@ data <- data %>%
 
 GDP <- merge(country[current, ], data, by = "iso2c", all.x = TRUE)
 
-# Impute NA Values with 1
+# Impute NA Values using values from 
 any(is.na(GDP))
-GDP[is.na(GDP)] <- 0
+GDP[is.na(GDP$NY.GDP.MKTP.CD), c(2, 70, 80, 135, 147) ] 
+GDP[is.na(GDP$NY.GDP.MKTP.CD), "NY.GDP.MKTP.CD"] <- c(3532000000, 25857000000, 10608000000, 2052000000, 330680000000)
 
 GDP <- GDP[order(GDP$index), c("cowc", "NY.GDP.MKTP.CD")]
 head(GDP)
@@ -114,7 +114,7 @@ EconomicDep <- matrix(0, nrow = sum(current), ncol = sum(current))
   
 for (i in 1:sum(current)) {
   for (j in 1:sum(current)) {
-    if (GDP[i, ] == 0 || GDP[j, ] == 0) {
+    if (GDP[i, ] == 0 || GDP[j, ] == 0 || i == j) {
       EconomicDep[i, j] <- 0
     } else {
       EconomicDep[i, j] <- min(tradematrix[i, j] * 1000000 / GDP[i, ], tradematrix[i, j] * 1000000 / GDP[j, ])
@@ -124,7 +124,6 @@ for (i in 1:sum(current)) {
 
 any(is.na(EconomicDep))
 any(is.infinite(EconomicDep))
-EconomicDep[is.na(EconomicDep)] <- 0
 
 colnames(EconomicDep) <- rownames(EconomicDep) <- countrycowc[current]
 
