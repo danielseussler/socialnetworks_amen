@@ -23,7 +23,7 @@ allyNetMat <- as.matrix.network(allyNet)
 countrycowc <- get.vertex.attribute(allyNet, "vertex.names")
 
 
-# Drop former countries 
+# Drop former countries
 former <- c("YAR", "YPR", "GFR", "GDR", "CZE", "YUG")
 formerIndex <- match(former, countrycowc)
 current <- !(countrycowc %in% former)
@@ -75,7 +75,7 @@ sum(get.vertex.attribute(allyNet, "cinc"))
 
 # catch cinc = 0 issue with imputing the average of 0 and the second lowest
 table(cinc)[2]
-cinc[cinc == 0] <- 0.0013/2
+cinc[cinc == 0] <- 0.0013 / 2
 
 for (i in 1:sum(current)) {
   for (j in 1:sum(current)) {
@@ -165,7 +165,7 @@ fitZNII0H <- readRDS(file = "analysis/models/fitZNII0H.rds")
 
 # AME without multiplicative effects (SRM Model)
 fitCPLTUK <- ame(allyNetMat,
-   Xrow = logGDP, Xcol = logGDP,
+  Xrow = logGDP, Xcol = logGDP,
   Xdyad = Xdyad[, , -5], R = 0, family = "bin", symmetric = TRUE,
   rvar = FALSE, cvar = FALSE, nvar = TRUE,
   nscan = 100000, burn = 10000, odens = 100
@@ -222,16 +222,6 @@ saveRDS(fitWIBWVH, file = "analysis/models/fitWIBWVH.rds")
 fitWIBWVH <- readRDS(file = "analysis/models/fitWIBWVH.rds")
 
 
-# Extended: Does dropping covariates yield different estimates? Drop all except GDP ECON DIST POLITY CAP
-fitGIPKVP <- ame(allyNetMat,
-  Xdyad = Xdyad[, , c(1, 3, 7, 8)], R = 2, family = "bin", symmetric = TRUE,
-  rvar = FALSE, cvar = FALSE, nvar = TRUE,
-  intercept = TRUE, nscan = 100000, burn = 10000, odens = 100
-)
-saveRDS(fitGIPKVP, file = "analysis/models/fitGIPKVP.rds")
-fitGIPKVP <- readRDS(file = "analysis/models/fitGIPKVP.rds")
-
-
 # Extended: Does dropping the intercept improve mcmc estiamtion?
 fitFVAEMT <- ame(allyNetMat,
   Xrow = logGDP, Xcol = logGDP,
@@ -243,13 +233,16 @@ saveRDS(fitFVAEMT, file = "analysis/models/fitFVAEMT.rds")
 fitFVAEMT <- readRDS(file = "analysis/models/fitFVAEMT.rds")
 
 
+
 # Extended: Drop all covariates
-fitSIXQ7Y <- ame(allyNetMat, R = 2, family = "bin", symmetric = TRUE,
-                 rvar = FALSE, cvar = FALSE, nvar = TRUE, 
-                 nscan = 100000, burn = 10000, odens = 100
+fitSIXQ7Y <- ame(allyNetMat,
+  R = 2, family = "bin", symmetric = TRUE,
+  rvar = FALSE, cvar = FALSE, nvar = TRUE,
+  nscan = 100000, burn = 10000, odens = 100
 )
 saveRDS(fitSIXQ7Y, file = "analysis/models/fitSIXQ7Y.rds")
 fitSIXQ7Y <- readRDS(file = "analysis/models/fitSIXQ7Y.rds")
+
 
 
 # Extended: Does dropping covariates yield different estimates? Drop SharedAllies ConflictInd
@@ -264,4 +257,11 @@ fitEQNO0V <- readRDS(file = "analysis/models/fitEQNO0V.rds")
 
 
 
-
+# Extended: Does dropping covariates yield different estimates? Drop all except GDP ECON DIST POLITY CAP
+fitGIPKVP <- ame(allyNetMat,
+  Xdyad = Xdyad[, , c(1, 3, 7, 8)], R = 2, family = "bin", symmetric = TRUE,
+  rvar = FALSE, cvar = FALSE, nvar = TRUE,
+  intercept = TRUE, nscan = 100000, burn = 10000, odens = 100
+)
+saveRDS(fitGIPKVP, file = "analysis/models/fitGIPKVP.rds")
+fitGIPKVP <- readRDS(file = "analysis/models/fitGIPKVP.rds")

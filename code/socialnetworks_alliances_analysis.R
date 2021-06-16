@@ -179,7 +179,7 @@ table_ame <- function(object, ...){
 fitZNII0H <- readRDS(file = "analysis/models/fitZNII0H.rds") # AME R=2
 fitCPLTUK <- readRDS(file = "analysis/models/fitCPLTUK.rds") # Additive Effects
 fitX7XDFO <- readRDS(file = "analysis/models/fitX7XDFO.rds") # Multiplicative Effects R = 2
-fitDASD8R <- readRDS(file = "analysis/models/fitDASD8R.rds") # No Effects
+fitDASD8R <- readRDS(file = "analysis/models/fitDASD8R.rds") # No Random Effects
 
 
 fitIQD1Q2 <- readRDS(file = "analysis/models/fitIQD1Q2.rds") # AME R=5
@@ -187,8 +187,9 @@ fitWIBWVH <- readRDS(file = "analysis/models/fitWIBWVH.rds") # ME R=5
 fitFVAEMT <- readRDS(file = "analysis/models/fitFVAEMT.rds") # AME R=2 Drop Intercept
 
 
-fitGIPKVP <- readRDS(file = "analysis/models/fitGIPKVP.rds") # AME Drop all except GDP ECON DIST POLITY CAP
+fitSIXQ7Y <- readRDS(file = "analysis/models/fitSIXQ7Y.rds") # AME drop all fixed effects
 fitEQNO0V <- readRDS(file = "analysis/models/fitEQNO0V.rds") # AME drop SharedA Conflict
+fitGIPKVP <- readRDS(file = "analysis/models/fitGIPKVP.rds") # AME drop all except GDP ECON DIST POLITY CAP
 
 
 
