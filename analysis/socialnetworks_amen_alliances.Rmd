@@ -17,6 +17,7 @@ header-includes:
   - \usepackage{url}
   - \usepackage{setspace}\onehalfspacing
   - \usepackage{natbib}\bibliographystyle{apa}
+  - \interfootnotelinepenalty=10000 
 keywords: Social Networks, Dyadic Data, Bayesian estimation, Latent Factors, International Relations.
 abstract: "This seminar paper introduces the Additive and Multiplicative Effects Network Model as proposed in @Hoff2021. First, a general introduction to network and relational data is given along with the statistical challenges of dyadic data analysis. Then, the Additive and Multiplicative Effects (AME) network model ist introduced and motivated. Second, an application to the international interstate alliances network is presented along with a comparison with restricted modeling approaches. The paper concludes with an outlook on extensions of the AME model. *Keywords: Dyadic Data, Bayesian Estimation, Latent Factors, International Relations.*"
 thanks: "Replication files are available on Github (http://github.com/danielseussler). **Current version**: `r format(Sys.time(),'%B %d, %Y')`; **Corresponding author**: daniel.seussler@campus.lmu.de"
@@ -28,7 +29,7 @@ nocite: |
 # Introduction
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.Aenean ma ssa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,
 
-
+\newpage
 # Theory
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,
 
@@ -176,40 +177,41 @@ knitr::include_graphics("figures/alliancesplot.pdf")
 
 **Network Statistics**
 
-The alliances data set includes 159^[This data set covers the period of 1981 - 2000, it includes all countries which were selected at any time of given series. I exclude the Yemen Arab Republic, Yemen People's Republic, German Democratic Republic, German Federal Republic, and Czechoslovakia as former countries, which yields a total of 159 countries.] countries and a total of 767 observed interstate alliances. In the respective sociomatrix, a value of 1 indicates the presence of an alliance between two countries, 0 its absence. Note that we have a symmetric matrix, as an alliance between two states is taken to be not directed. 56 countries have no alliance recorded in the data set, the United States and Canada declare the most, with 43 and 39 alliances respectively. The median number of alliances is 9 and the network density is 0.061.
+The alliances data set includes 158^[This data set covers the period of 1981 - 2000, it includes all countries which were selected at any time of given series. I exclude the Yemen Arab Republic, Yemen People's Republic, German Democratic Republic, German Federal Republic, Yugoslawia, and Czechoslovakia as former countries, which yields a total of 158 countries.] countries and a total of 767 observed interstate alliances. In the respective sociomatrix, a value of 1 indicates the presence of an alliance between two countries, 0 its absence. Note that we have a symmetric matrix, as an alliance between two states is taken to be not directed. 55 countries have no alliance recorded in the data set, the United States and Canada declare the most, with 43 and 39 alliances respectively. The median number of alliances is 9 and the network density is 0.061.
 
 A visualization of the interstate alliance network is provided in Figure \@ref(fig:alliancesfigure). Strong clustering on based geographic proximity is immediately apparent. Located in the upper right of the figure we find the Middle East, below France in the center are the European states. In the left we find the former USSR countries, in the lower part Latin America and the Caribbean states. Perhaps more surprisingly there are two distinct clusters of African states.
 
-Observed statistics of network dependence will be used later on to assess model fit and are computed as described above. First order statistics, the standard deviation of the row- and columnmeans is 0.057. As our sociomatrix is symmetric, second order dependency is 1. Third order statistics are 0.389, both for the cycle and transitive dependency, because of symmetry.
+Observed statistics of network dependence will be used later on to assess model fit and are computed as described above. First order statistics, the standard deviation of the row- and columnmeans is 0.0596. As our sociomatrix is symmetric, second order dependency is 1. Third order statistics are 0.3881, both for the cycle and transitive dependency, because of symmetry.
 
 
 
 **Model Comparison: Interstate Defence Alliances**
 
-I follow the specification of @dynamicAMEN and @geometryofsecurity to define nodal and dyadic covariates which are both sensible to the approach and relevant to the theoretic discussion of interstate alliance networks.^[@dynamicAMEN present a dynamic extension of the AME network model. In @geometryofsecurity the author proceeds with a *stochastic actor-oriented* approach for the analysis of longitudinal network data. The covariates of interest however are transferable although not directly comparable.] 
+I follow the specification of @dynamicAMEN and @geometryofsecurity to define nodal and dyadic covariates which are both sensible to the approach and relevant to the theoretic discussion of interstate alliance networks.^[@dynamicAMEN present a dynamic extension of the AME network model. In @geometryofsecurity the author proceeds with a *stochastic actor-oriented* approach for the analysis of longitudinal network data. The covariates of interest reflect the research field, yet are not directly comparable.] 
 
-*1. Nodal Covariates.* As covariate of interest specific to each actor in the network, I include Gross Domestic Product (GDP) in per capita terms and on log scale for each country using data from @wdigdppc. Missing data is imputed with 0 values. ^[Adding as a measure for military capability the *Composite Index of National Capability* (CINC), appended in the alliances data set, did not improve model fit during preliminary modeling. It is therefore omitted from the analysis.]
+*1. Nodal Covariates.* As covariate of interest specific to each actor in the network, I include Gross Domestic Product (GDP) in per capita terms and on log scale for each country using data from @wdigdppc. Missing data points are imputed on individual basis.^[Adding the *Composite Index of National Capability* (CINC) as a measure for military capability, appended in the alliances data set, did not improve model fit during preliminary modeling. It is therefore omitted from the analysis.]
 
 *2. Dyadic Covariates.* As dyadic effects I include covariates on geographic factors, political and military similarity, past conflicts, economic dependence, and cultural similarity. The covariates are defined as follows: 
 
-1. $GeoDistance_{ij}$ is the logarithmic geographic distance between two countries as measured by the distance of the respective capitals. If the two countries share a border, the log distance is set 0. 
-2. $CulturalSim_{ij}$ is a dichotomous variable which takes the value 1, if the most spoken language of two countries is the same, 0 else.^[I use data from the replication files of @geometryofsecurity and choose the year 1985 since the year 2000 did not seem to be accurate. @culturalsimdata is provided as the original data source.] 
-3. $EconomicDep_{ij}$ is a measure for the economic dependence of two states, calculated by the share of Imports and Exports to GDP: 
+1. $GeoDistance_{ij}$ is the logarithmic geographic distance between two countries measured by the distance of the respective capitals. If the two countries share a border, the log distance is set 0. 
+2. $CulturalSim_{ij}$ is a dichotomous variable which takes the value 1, if the most spoken language of two countries is the same, 0 else.^[I use data from the replication files of @geometryofsecurity and choose the year 1985, since the year 2000 did not seem to be accurate. @culturalsimdata is provided as the original data source.] 
+3. $EconomicDep_{ij}$ is a measure for the economic dependence of two states, calculated by the share of Imports and Exports to the respective GDP: 
   $$EconomicDep_{ij} = min\left(\frac{Trade_{ij}}{GDP_i}, \frac{Trade_{ij}}{GDP_j} \right) \cdot 100\%$$
-  To construct this index, I take data from the Correlates of War Project on trade flows (@tradedata) and @wdigdp. 
+  To construct this index, I take data from the Correlates of War Project on trade flows (@tradedata) and @wdigdp. Missing data points for GDP are imputed on individual basis, negative values for trade are set 0. 
 4. $SharedAllies_{ij}$ is the number of shared allies between country $i$ and $j$. 
-5. $ConflictInd_{ij}$ is an indicator variable which takes the value 1 if a militarized interstate dispute was recorded in the preceding 10 years between country $i$ and $j$. 
+5. $ConflictInd_{ij}$ is an indicator variable that takes the value 1 if a militarized interstate dispute was recorded in the preceding 10 years between country $i$ and $j$, 0 else.
 6. $PoliticalSim_{ij}$ is constructed using data from the Polity IV Index: 
   $$PoliticalSim_{ij} = \lvert POLITY_i - POLITY_j \rvert$$
+  The Polity IV index classifies countries on a 21 point scale from -10 to 10, where -10 to -6 corresponds to autocracies, -5 to 5 to anocracies, and 6 to 10 to democracies. Note that a high value in PoliticalSim corresponds to a high *dissimilarity*.
 7. $CapabilityRat_{ij}$ The capability ratio is defined as the log of the relative *Composite Index of National Capability* of both countries, with the stronger state (indicated by the subscript *s*) as the numerator: 
-  $$CapRat_{ij} = \log\left(\frac{CINC_s}{CINC_w}\right).$$
-Because the CINC index is calculated only for countries which surpass a certain threshold, data is missing for a set of #CHECK countries. For these countries the Capability Ratio is set at 0.
+  $$CapabilityRat_{ij} = \log\left(\frac{CINC_s}{CINC_w}\right).$$
+At the provided precision, three countries are indistinguishable from 0. I impute these data points with 0.5 times of the second to lowest value.
 
-Note that each dyadic covariate is symmetric. To validate the network approach taken in this application case, I estimate four models with different restrictions. One with additive and multiplicative effects (AME), one with only additive effects (AE), one with only multiplicative effects (ME), and one without any types of random effects (NO). The latter one yields a classical (bayesian) probit regression, which does not take into account any type of network effects. This serves as benchmark for our extended modeling. The results presented in this section are based on 100,000 Gibbs iterations and a burn-in of 10,000 draws. Output density is set at 100. This long sampling and stark thinning is due to symmetric network matrices, which results in considerably slow mixing of the MCMC chains [see @hoff2015dyadic, p. 44].
+Note that each dyadic fixed effect is symmetric. To validate the network approach taken in this application case, I estimate four models with different restrictions. One with additive and multiplicative effects (AME), one with only additive effects (AE), one with only multiplicative effects (ME), and one without any types of random effects (NO). The latter one yields a classical (bayesian) probit regression, which does not take into account any type of network effects. This serves as benchmark for our validation. Based on preliminary modeling, I choose rank two for the multiplicative effects^[A two dimensional latent space facilitates the visualization in the analysis. Moreover, choosing a higher dimension of R = 5 for the latent space did not improve model fit (not shown here, see code appendix for further comparisons).]. The results presented in this section are based on 100,000 Gibbs iterations and a burn-in of 10,000. Output density is set at 100. This long sampling and stark thinning is due to symmetric matrices of the multiplicative part, which results in considerably slow mixing of the MCMC chains [see @hoff2015dyadic, p. 44] and high autocorrelation of the estimates.
 
-As elaborated in the subsection on Estimation and Goodness of Fit, model assessment is performed using the goodness of fit statistics of the posterior predictive draws. Figure \@ref(fig:gofstats) illustrates this comparison for our models. The red line indicates the observed goodness of fit statistic. On the left, we have a comparison of first order effects, on the right, third order effects. As our matrix is symmetric, second order dependence is obsolete and thus omitted. 
+As elaborated in the subsection on Estimation and Goodness of Fit, model assessment is performed using the goodness of fit statistics of the posterior predictive draws. Figure \@ref(fig:gofstats) illustrates this comparison for our models. The red line indicates the observed goodness of fit statistic for the sociomatrix. On the left, we have a comparison of first-order network statistics, on the right, third-order. As our matrix is symmetric, second-order dependence, i.e. reciprocity, is obsolete and thus omitted.
 
-The first row compares the ordinary (bayesian) probit regression (NO) with the additive effects (AE) model. Predictably, the the former (pink) does barely represent the network dependencies present in the data. Adding additive effects does improve this representation (blue), an overestimated first order effect does probably account for the high third order network effect. Still, both models are not able to capture the extent of dependency. In the second row, the additive effects (AE) model is compared to the multiplicative effects model (ME, R = 2), which does improve model fit considerably. First order effects are captured very well, representation of third order effects has improved. Comparing multiplicative effects (green) with the full AME Model (grey, third row), both R = 2, shows the best fit with respect to the goodness of fit statistics. 
+The first row compares the ordinary (bayesian) probit regression (NO) with the additive effects (AE) model. Predictably, the former (pink) does barely represent the network dependencies present in the data. Adding additive effects does improve this representation (blue). An overestimated first order effect does probably account for the high third order network effect. Still, both models are not able to capture the extent of statistical dependency. In the second row, the additive effects (AE) model is compared to the multiplicative effects model (ME, R = 2, green), which does improve model fit considerably. First order effects are captured very well, representation of third order effects has improved. Comparing multiplicative effects with the full AME Model (grey, third row), both R = 2, show the best fit with respect to the goodness of fit statistics. 
 
 ```{r models}
 fitZNII0H <- readRDS(file = "models/fitZNII0H.rds") # AME R=2
@@ -225,6 +227,7 @@ knitr::include_graphics("figures/gofstats.pdf")
 ```{r modelcomparison1, results='asis'}
 modelAMEvsNO <- cbind(table_ame(fitZNII0H), 
                       table_ame(fitDASD8R))
+rownames(modelAMEvsNO)[1] <- "Intercept"
 
 modelAMEmsg <- paste("Effective Sample Size: ", toString(round(coda::effectiveSize(fitZNII0H$BETA))), ".", sep = "")
 modelNOmsg <- paste("Effective Sample Size: ", toString(round(coda::effectiveSize(fitDASD8R$BETA))), ".", sep ="") 
@@ -242,6 +245,7 @@ kbl(modelAMEvsNO, booktabs = T, caption = "Model Comparison") %>%
 ```{r modelcomparison2, results='asis'}
 modelAEvsME <- cbind(table_ame(fitCPLTUK), 
                      table_ame(fitX7XDFO))
+rownames(modelAEvsME)[1] <- "Intercept"
 
 modelAMmsg <- paste("Effective Sample Size: ", toString(round(coda::effectiveSize(fitCPLTUK$BETA))), ".", sep = "") 
 modelMEmsg <- paste("Effective Sample Size: ", toString(round(coda::effectiveSize(fitX7XDFO$BETA))), ".", sep = "") 
@@ -256,66 +260,64 @@ kbl(modelAEvsME, booktabs = T, caption = "Model Comparison") %>%
   footnote(number = c(modelAMmsg, modelMEmsg))
 ```
 
-```{r traceplotAMEr2, fig.cap ="Trace Plots for the AME Rank 2 Model. Trending and multimodality is visible for several parameter chains of the mcmc estimation.", fig.align='center', out.height="90%"}
-knitr::include_graphics("figures/traceplotAmeR2.pdf")
-```
 
-Table \@ref(tab:modelcomparison1) and \@ref(tab:modelcomparison2) provide parameter estimates for the above discussed four specifications. Estimates are provided as posterior means, along with the posterior standard deviation and a $p$ - value.^[The $p$ - value is calculated under the assumption of an approximately normal posterior distribution (#REFERENCE). Yet, the $p$ - value should be interpreted with caution, as the density plots do not always suggest approximate normality.] Different specifications lead to vastly different estimates, not only in magnitude but also in changes of the sign. 
 
-The coefficients of the fixed effects can be interpreted as in the generalized linear regression framework with a probit link, i.e., a joint language (coef. 0.65) increases ceteris paribus (c. p.) and *conditional* on the additive and multiplicative effects the likelihood of the presence of an alliance. A higher geographic distance decreases the likelihood, c. p. and conditional on the random effects. Directionally, only the coefficients of the geographic distance and cultural similarity match @geometryofsecurity. 
+Table \@ref(tab:modelcomparison1) and \@ref(tab:modelcomparison2) provide parameter estimates for the four specifications discussed above. Estimates are provided as posterior means, along with the posterior standard deviation and a $p$ - value.^[The $p$ - value is calculated under the assumption of an approximately normal posterior distribution, i.e., $z = \frac{pmean}{psd} \sim \mathcal{N}(0,1)$. Yet, the $p$ - value should be interpreted with caution, as the density plots do not always suggest approximate normality.] Different specifications lead to vastly different estimates, not only in magnitude but also in changes of the sign. 
 
-Figure \@ref(fig:traceplotAMEr2) shows the trace plots of the parameter estimates for the AME R=2 model. Both multimodality and strong trending are apparent, specifically for the additive effect and the intercept, which suggests problems with the mcmc estimation. This is also indicated by the low effective sample size (Table \@ref(tab:modelcomparison1)) for the specifications including multiplicative effects.
+We restrict our attention to the AME network model as, based on the network dependencies in figure \@ref(fig:gofstats), it exhibits the best fit in the above comparison. In the AME framework, we can interpret the fixed effects similar to the generalized linear regression framework, with the addition that we condition the effect estimate on the additive and multiplicative random effects. All estimates are directionally consistent with our expectations. A low intercept reflects the low density (0.061) of the interstate alliance network. A higher GDP (log p. c.) is associated *ceteris paribus* and conditional on the random effects with a higher propensity of interstate alliance formation. Geographic distance has a negative effect. Cultural similarity as reflected by joint language, a higher economic dependence, number of shared allies, and previous conflict are all associated with the presence of alliances. In political similarity, a higher dissimilarity is associated with a negative effect on alliance formation, whereas differences in military capability show no effect.
 
-Having detailed the fixed effects part of the AME model we turn to the analysis of the random effects of the model. Figure \@ref(fig:LatentSpaceAME) visualizes the latent space obtained with the rank 2 AME model. The multiplicative effect in a symmetric model is $U^T L U$, where $U \in \mathbb{R}^{159 \times 2}$ and $L \in \mathbb{R}^{2 \times 2}$. Both $U$ and $L$ are provided as posterior means in the package output, to visualize the latent space $u_{i} = U_{i \cdot } \sqrt{L}$ for $i = 1, \dots, 159$ is plotted.
+In the AME network model framework, statistical network dependencies will be encoded in the additive and multiplicative, i.e., the random-effects component of the model. We expect the multiplicative component to capture third-order network effects and cluster types of states which share similar characteristics with respect to their tie formation in the network, while additive effects should capture the actor-specific propensity of tie formation. Figure \@ref(fig:LatentSpaceAME) visualizes the latent space obtained with the AME (R=2) model. The multiplicative effect (matrix notation) in a symmetric model is $U^T L U$, where $U \in \mathbb{R}^{158 \times 2}$ and $L \in \mathbb{R}^{2 \times 2}$. Both $U$ and $L$ are provided as posterior means in the package output, and to visualize the latent space the decomposition of this matrix is computed: $u_{i} = U_{i \cdot } \sqrt{L}$ for $i = 1, \dots, 158$. 
 
-```{r LatentSpaceAME, fig.cap = "Visualization of the latent space in the AME model with rank 2. Values are posterior mean estimates for the multiplicative random effects. Proximity in the latent space indicates similarity in the alliances data set. ", fig.align = "center", out.width="95%"}
+Apart from the scatter in the center of the plot, the multiplicative component captures some interesting geographical factors, which were already apparent in Figure \@ref(fig:alliancesfigure), and are not captured within the $GeoDistance_{ij}$ fixed effect. This includes the Americas on the left and at least two distinct clusters of African states. Russia and some of the former USSR states are clustered in the lower left, the right side has the Middle East and North African countries. 
+
+Additive effects are plotted in Figure \@ref(fig:AdditiveEffects). Among the five countries with the highest posterior mean additive effects are Canada, the United States, and France. Switzerland, Sweden, and Austria list among the five countries with the lowest values. This is as expected, as additive effects are added to capture first-order effects, i.e., the propensity to form a network tie.
+
+```{r LatentSpaceAME, fig.cap = "Visualization of the latent space in the AME network model with rank 2. Values are posterior mean estimates for the multiplicative random effects. Proximity in the latent space indicates similarity with respect to tie formation.", fig.align = "center", out.width="95%"}
 knitr::include_graphics("figures/LatentSpaceAME.pdf")
 ```
 
-Apart from the scatter in the center of the plot, the multiplicative effects capture some interesting geographical factors, which were already apparent in figure \@ref(fig:alliancesfigure), and are not captured within the $GeoDistance_{ij}$ fixed effect. This includes the Americas in the left and at least two distinct clusters of African states. The United States and Russia take as former Block powers positions at the oposite sides. 
-
-```{r AdditiveEffects, fig.cap = "Additive Random Effects"}
+```{r AdditiveEffects, fig.cap = "Additive Random Effects in the AME network model with rank 2. Values are posterior mean estimates for the additive random effects. AE effects capture first-order network effects, i.e., actor-specific propensity to form a network tie.", out.width="95%"}
 knitr::include_graphics("figures/AdditiveEffectsPlot.pdf")
 ```
 
-Additive effects are plotted in \@ref(fig:AdditiveEffects). 
+```{r traceplotAMEr2, fig.cap ="Trace plots for the AME rank 2 model. Trending and multimodality is visible for several parameter trace plots of the MCMC estimation.", fig.align='center', out.height="90%"}
+knitr::include_graphics("figures/traceplotAmeR2.pdf")
+```
 
+Figure \@ref(fig:traceplotAMEr2) shows the trace plots for the nine fixed effects and the variance of the additive effect in this estimation. Both multimodality and persistent trending are apparent, even *after* strong thinning of 1 to 100. Specifically for the variance of the additive effect and the intercept, which suggests issues with the mixing of the MCMC chains. This is also indicated by the low effective sample size (Table \@ref(tab:modelcomparison1)) for the specifications including multiplicative effects.
 
+To adapt the model I estimated the following changed specifications of the AME rank 2 model. First, I dropped the Intercept, which yielded worse effective sample sizes. Predictably, the variance of the additive effect increased, along with a change of sign in the fixed effects estimates of *GDP (log p.c.), ConflictInd*, and *CapabilityRat*. Overall it did not seem to improve the estimation.^[This model and the ones following can be found in the online code appendix and are not shown here.]
 
+Next, I dropped the two covariates with the lowest effective sample size, *SharedAllies* and *ConflictInd*. Except for the intercept, which increased by a third, the estimated variance of the additive effect and the fixed effect estimates remained virtually the same. The issues with the trace plots and the low effective sample size remained. 
 
-
-
-
-- Robustness Checks
-
-- Does a higher R Latent Factor yield better results?
-- Does a higher R Latent Factor yield better results? restricted to M Effects
-- Does dropping variables improve model performance?
-
-
-
+Then, I removed all non-significant fixed covariates, leaving only the *intercept, GeoDistance, EconomicDep, SharedAllies*, and *PoliticalSim*. [INSERT RESULTS] Again, these changes did not seem to substantially improve the model. This posits the general question of the inclusion of fixed covariates in the model. Estimating an AME rank 2 network model without *any* fixed effects does *not* depress the representation of network dependencies. In practice, this makes covariate selection troublesome, which leads to the following section.
 
 
 
 **Limitations and Further Approaches**
 
+Before entering the limitations and the discussion on the AME network model, three possible approaches to improve the present issues:
+
+*1.* These changes in model specifications did only affect dyadic covariates. Given the persistent trend in the variance of the additive effect and the intercept, one could hypothesize that the actor-specific propensity of tie formation is not sufficiently taken into account within the model. This could be alleviated by adding nodal covariates. Unfortunately, there was no evident political or economical factor that could have been included. One option could be an index of vote patterns in the United Nations, along the lines of the outcome variable in @dynamicAMEN. This is left for further exploration. 
 
 
-  
+*2.* Wide posterior intervals indicate a wide distribution about the parameter estimates of the intercept and the variance of the additive effects. This could present problems with the posterior estimation^[See for example @mcmcissues.]. A natural step would be to specify different starting values as well as stronger priors, specifically for the intercept. The network density^[This calculation takes into account every state in the data.] ranges from `r round(range(gden(allyNet, mode = "digraph"))[1], 3)` to `r round(range(gden(allyNet, mode = "digraph"))[2], 3)` in the time-frame 1981 - 2000. Assuming this low density is a reliable characteristic of the interstate alliance network, a narrower prior distribution, could be selected for the intercept.
 
-The network density^[This calculation takes into account every state in the data.] ranges from `r round(range(gden(allyNet, mode = "digraph"))[1], 3)` to `r round(range(gden(allyNet, mode = "digraph"))[2], 3)` in the time-frame 1981 - 2000. Assuming this low density as a reliable characteristic of the interstate alliance network, stronger priors, specifically for the intercept, could be selected. Opposite trending of intercept and additive effects does indicate an over-identification issue, which could be minimized through this.
+*3.* Lastly, longer burn-in and sampling durations could potentially improve the estimates. However, drastically raising these numbers would push computational feasibility, as every model in this paper already took around two hours to estimate. 
+
+The low effective sample size and the troublesome trace plots of the AME network model leave doubts about the validity of statistical inference in this particular application case. Further analysis to improve the model fitting procedure would need to tackle the MCMC estimation procedure with more elaborated tools on the analysis of different chains as the visuals provided in this seminar paper. The present issues could have their roots in different aspects of the chosen data set. The absence of strong predictors for the actor-specific propensity of tie formation, for example. A very low network density, along with large heterogeneity in the network actors too; as well as the symmetric, binary outcome.
 
 
-
-\newpage
 # Discussion
 
-- Discussion
+The Additive and Multiplicative Effects network model provides an extension to the already familiar generalized linear model framework to network data. By adding a node-specific additive random effect and a latent space as a multiplicative effect, an AME model is able to capture a range of statistical network effects that are inherent in dyadic data and ordinary regression frameworks that fail to account for (Figure \@ref(fig:gofstats). The deliberate omission of these effects can lead to significantly biased estimates of effect sizes. 
 
+In this regard, the AME Model presented in @Hoff2021 provides an easy-to-use and interpretable model for network data. 
 
+However, the Bayesian estimation procedure makes it difficult for non-statisticians and statisticians alike to pin down the issues in the estimation, for example in this paper, to establish valid statistical inference. It requires furthermore a different approach to model assessment and goodness of fit, specifically with covariate selection in mind. 
 
+@violenceNetworks apply the AME network model to study civil conflict in Nigeria and the implications of the emergence of Boko Haram. This model has also been expanded to include longitudinal networks or replicated data. @Minhas_Hoff_Ward_2016 use a time series approach of the AME network model to study international relations, in this case, the type of interaction chosen by each state. @dynamicAMEN model UN Voting Behaviour in a similar fashion with a longitudinal extension of the AME framework which relies on Gaussian processes.
 
-Further applications can be found in the following papers: @violenceNetworks apply the AME network model to study the civil conflict in Nigeria and the implications of the emergence of Boko Haram. @Minhas_Hoff_Ward_2016 use a time series approach of the AME network model to study international relations, in this case the type of interaction chosen by each state. @dynamicAMEN model UN Voting Behaviour with a longitudinal extension which relies on Gaussian processes. 
 
 \newpage
 # References
