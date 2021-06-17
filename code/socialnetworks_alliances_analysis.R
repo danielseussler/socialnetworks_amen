@@ -104,10 +104,18 @@ countryname[degreeNet == 23]
 # GOF Statistics ---------------------------------------------------------------
 gofstats(allyNetMat)
 
-sd.colmean <- sd.rowmean<-sd(rowMeans(allyNetMat,na.rm=TRUE) ,na.rm=TRUE)
 diag(allyNetMat) <- NA
-sd.colmean <- sd.rowmean<-sd(rowMeans(allyNetMat,na.rm=TRUE) ,na.rm=TRUE)
+sd.colmean <- sd.rowmean <- sd(rowMeans(allyNetMat, na.rm = TRUE), na.rm = TRUE)
+sd.colmean
 
+dyad.dep <- suppressWarnings(cor(c(allyNetMat), c(t(allyNetMat)), use = "complete.obs"))
+
+E <- allyNetMat - mean(allyNetMat, na.rm = TRUE)
+D <- 1 * (!is.na(E))
+E[is.na(E)] <- 0
+
+cycle.dep <- sum(diag(E %*% E %*% E)) / (sum(diag(D %*% D %*% D)) * sd(c(allyNetMat), na.rm = TRUE)^3)
+trans.dep <- sum(diag(E %*% t(E) %*% E)) / (sum(diag(D %*% t(D) %*% D)) * sd(c(allyNetMat), na.rm = TRUE)^3)
 
 
 ## Set Colors ----------------------------------------------------------
@@ -189,9 +197,10 @@ fitFVAEMT <- readRDS(file = "analysis/models/fitFVAEMT.rds") # AME R=2 Drop Inte
 
 fitSIXQ7Y <- readRDS(file = "analysis/models/fitSIXQ7Y.rds") # AME drop all fixed effects
 fitEQNO0V <- readRDS(file = "analysis/models/fitEQNO0V.rds") # AME drop SharedA Conflict
-fitGIPKVP <- readRDS(file = "analysis/models/fitGIPKVP.rds") # AME drop all except GDP ECON DIST POLITY CAP
+fitGIPKVP <- readRDS(file = "analysis/models/fitGIPKVP.rds") # AME Drop all non significant except GDP DIST ECON SharedAllies POLITY
 
 
+fitRU7J8K <- readRDS(file = "analysis/models/fitRU7J8K.rds") # AME quadruble iterations
 
 # Plots + Summaries ------------------------------------------------------------
 plot(fitZNII0H)
@@ -200,7 +209,40 @@ plot(fitX7XDFO)
 plot(fitDASD8R)
 
 plot(fitIQD1Q2)
+plot(fitWIBWVH)
+plot(fitFVAEMT)
 
+plot(fitSIXQ7Y)
+plot(fitEQNO0V)
+plot(fitGIPKVP)
+
+plot(fitRU7J8K)
+
+
+# R=2 vs R=5 -------------------------------------------------------------------
+
+ht <- c(1000, 1000, 50, 100, 100)
+
+for (k in c(1, 4)) {
+  # AME R = 5
+  xlim <- range(c(fitIQD1Q2$GOF[, k], fitZNII0H$GOF[, k], fitIQD1Q2$GOF[1, k])) * c(.9, 1.1)
+  hist(fitIQD1Q2$GOF[-1, k],
+       prob = TRUE, col = "yellowgreen", xlim = xlim, main = "", ylab = "",
+       xlab = colnames(fitIQD1Q2$GOF)[k], ylim = c(0, ht[k])
+  )
+  # AME R = 2
+  clr <- c(col2rgb("slategrey") / 255, .75)
+  hist(fitZNII0H$GOF[-1, k],
+       prob = TRUE, add = TRUE,
+       col = rgb(clr[1], clr[2], clr[3], clr[4])
+  )
+  
+  abline(v = fitZNII0H$GOF[1, k], col = "red")
+}
+
+
+median(fitZNII0H$GOF[-1, k]) # R=2
+median(fitIQD1Q2$GOF[-1, k]) # R=5  #does not yield improvement
 
 
 # Model Comparison using GOF Statistics ----------------------------------------
@@ -208,7 +250,7 @@ plot(fitIQD1Q2)
 par(mfrow = c(3, 2))
 
 # Ordinary Regression vs Additive Effects (SRRM)
-ht <- c(200, 200, 50, 100, 100)
+ht <- c(300, 300, 50, 100, 100)
 
 for (k in c(1, 4)) {
   # Ordinary Regression
@@ -251,7 +293,7 @@ for (k in c(1, 4)) {
 
 
 # Multiplicative Effects vs AME
-ht <- c(1200, 1200, 50, 100, 100)
+ht <- c(1000, 1000, 50, 100, 100)
 
 for (k in c(1, 4)) {
   # Multiplicative Effects
@@ -260,7 +302,7 @@ for (k in c(1, 4)) {
     prob = TRUE, col = "yellowgreen", xlim = xlim, main = "", ylab = "",
     xlab = colnames(fitX7XDFO$GOF)[k], ylim = c(0, ht[k])
   )
-  # Additive Effects
+  # AME 
   clr <- c(col2rgb("slategrey") / 255, .75)
   hist(fitZNII0H$GOF[-1, k],
     prob = TRUE, add = TRUE,
@@ -309,16 +351,20 @@ plot(fitZNII0H$APM)
 
 head(fitZNII0H$U)
 
-LatentSelect <- c("CUB", "USA", "CAN", "PER", "COL", "ANG","SLO","SAU", "KUW", "AZE",
-                  "GHA", "CHN","MAL", "PRK", "GMY", "FRN", "NIR", "ALG", "RUS", "ISR", 
-                  "ERI", "AUL", "SWZ")
+countrycowc[countryname == "Belarus"]
+
+LatentSelect <- c("CUB", "USA", "COS","DRC", "COL", "SLO","SAU", "AZE","SEN", "LIB",
+                  "GHA", "CHN","MAL", "KGY", "GMY", "FRN", "NIR", "RUS", "NAM", "UZB",
+                   "NAM", "AUL", "SWZ", "BUI", "BLR")
 LatentSelectIndex <- match(LatentSelect, countrycowc)
 
 LatentSpace <- fitZNII0H$U %*% diag(sqrt(fitZNII0H$L))
 
+par(mfrow = c(1,1))
 plot(LatentSpace, col = col, pch = 16, cex = 1.2, xlab = "", ylab = "")
 legend("topleft", legend = c("Africa", "Americas", "Asia", "Europe", "Oceania"),  
-       bty = "n", col = c("#E64A45", "#F2C249", "#3D4C53", "#4DB3B3", "#E6772E"), pch = 16, pt.cex = 1.5)
+       bty = "n", col = c("#E64A45", "#F2C249", "#3D4C53", "#4DB3B3", "#E6772E"), 
+       pch = 16, pt.cex = 1.5)
 text(LatentSpace[LatentSelectIndex, ], labels = countryname[LatentSelectIndex], cex = 1, pos = 4, col = "black")
 
 #text(LatentSpace, labels = countrycowc, cex = 0.7, pos = 4, col = "black")
@@ -332,18 +378,179 @@ var(fitZNII0H$APM)
 plot(density(fitZNII0H$APM))
 
 head(countryname[order(fitZNII0H$APM)])
+head(countryname[order(-fitZNII0H$APM)])
 
-AdditiveSelect <- c("USA", "COL", "SWZ", "FRN", "SPN", "ETH", 
-                    "KZK", "SAF", "EQG", "KUW", "KEN", "AUS")
+AdditiveSelect <- c("USA", "COL", "SWZ", "ETH", "GMY", "COS", "CHN",
+                    "KZK", "SAF", "KEN")
 
 AdditiveEff <- data.frame("Effect" = fitZNII0H$APM, "Countryname" = countryname, 
                           "Countrycowc" = countrycowc)[order(fitZNII0H$APM), ]
-
 AdditiveSelectIndex <- match(AdditiveSelect, AdditiveEff$Countrycowc)
 
 
 par(mai = c(0.5,1.5,0.5,0.2))
-plot(fitZNII0H$APM[order(fitZNII0H$APM)], 1:159, col= c("#3D4C53"), pch = 16, xlab = "", ylab = "", yaxt = 'n', cex.axis = 0.8)
+plot(fitZNII0H$APM[order(fitZNII0H$APM)], 1:sum(current), col= c("#3D4C53"), pch = 16, xlab = "", ylab = "", yaxt = 'n', cex.axis = 0.8)
 axis(2, at = AdditiveSelectIndex, labels = AdditiveEff$Countryname[AdditiveSelectIndex] , las = 1, cex.axis = 0.8, family = "serif")
 abline(v=0, col="grey")
+
+
+
+
+
+# Changes in model specifications ----------------------------------------------
+
+plot(fitIQD1Q2)
+plot(fitWIBWVH) 
+
+
+plot(fitSIXQ7Y)
+plot(fitEQNO0V)
+plot(fitGIPKVP)
+
+
+
+# Extension AME R=2 No Intercept -----------------------------------------------
+plot(fitFVAEMT) 
+
+fitFVAEMTparam <- cbind(fitFVAEMT$VC[,"va"],fitFVAEMT$BETA)
+colnames(fitFVAEMTparam) <- c("VA", pars)
+mcmc_trace(fitFVAEMTparam, facet_args = list(ncol = 2))
+
+coda::effectiveSize(fitFVAEMT$BETA)
+summary(fitFVAEMT)
+
+
+
+# Extension AME drop SharedA Conflict-------------------------------------------
+plot(fitEQNO0V) 
+coda::effectiveSize(fitEQNO0V$BETA)
+summary(fitEQNO0V)
+
+
+# Extension Drop all non significant except GDP DIST ECON SharedAllies POLITY---
+
+
+
+# Extension Drop all covariates ------------------------------------------------
+plot(fitSIXQ7Y)
+summary(fitSIXQ7Y)
+coda::effectiveSize(fitSIXQ7Y$BETA)
+
+AdditiveSelect <- c(
+  "USA", "COL", "SWZ", "ETH", "COS", "CHN",
+  "KZK", "SAF", "KEN"
+)
+AdditiveEff <- data.frame(
+  "Effect" = fitSIXQ7Y$APM, "Countryname" = countryname,
+  "Countrycowc" = countrycowc
+)[order(fitSIXQ7Y$APM), ]
+
+AdditiveSelectIndex <- match(AdditiveSelect, AdditiveEff$Countrycowc)
+
+par(mfrow = c(1, 1), mai = c(0.5, 1.5, 0.5, 0.2))
+
+plot(fitSIXQ7Y$APM[order(fitSIXQ7Y$APM)], 1:sum(current), col = c("#3D4C53"), pch = 16, xlab = "", ylab = "", yaxt = "n", cex.axis = 0.8)
+axis(2, at = AdditiveSelectIndex, labels = AdditiveEff$Countryname[AdditiveSelectIndex], las = 1, cex.axis = 0.8, family = "serif")
+abline(v = 0, col = "grey")
+
+
+countrycowc[countryname == "Belarus"]
+LatentSelect <- c(
+  "CUB", "USA", "DRC", "COL", "SAU", "AZE", "SEN", "LIB",
+  "GHA", "KGY", "GMY", "FRN", "RUS", "NAM",
+  "NAM", "AUL", "SWZ", "BUI"
+)
+LatentSelectIndex <- match(LatentSelect, countrycowc)
+
+LatentSpace <- fitSIXQ7Y$U %*% diag(sqrt(fitSIXQ7Y$L))
+
+par(mfrow = c(1, 1))
+plot(LatentSpace, col = col, pch = 16, cex = 1.2, xlab = "", ylab = "")
+legend("topleft",
+  legend = c("Africa", "Americas", "Asia", "Europe", "Oceania"),
+  bty = "n", col = c("#E64A45", "#F2C249", "#3D4C53", "#4DB3B3", "#E6772E"), 
+  pch = 16, pt.cex = 1.5
+)
+text(LatentSpace[LatentSelectIndex, ], labels = countryname[LatentSelectIndex], cex = 1, pos = 4, col = "black")
+
+# latent space characteristics are even stronger
+
+
+
+# Extended Drop all non-significant --------------------------------------------
+pars = c("GDP (log p.c.).node", "GeoDistance.dyad", "EconomicDep.dyad", 
+         "SharedAllies.dyad", "PoliticalSim.dyad" )
+
+coda::effectiveSize(fitGIPKVP$BETA)
+summary(fitGIPKVP)
+plot(fitGIPKVP)
+
+mcmc_areas(fitGIPKVP$BETA)
+mcmc_hist(fitGIPKVP$BETA, pars = pars)
+mcmc_intervals(fitGIPKVP$BETA, pars = pars)
+
+
+
+# Extended Quadruble Iterations  -----------------------------------------------
+coda::effectiveSize(fitRU7J8K$BETA)
+summary(fitRU7J8K)
+plot(fitRU7J8K)
+
+pars <- c(
+  "intercept", "GDP (log p.c.).node", "GeoDistance.dyad", "CulturalSim.dyad", "EconomicDep.dyad",
+  "SharedAllies.dyad", "ConflictInd.dyad", "PoliticalSim.dyad", "CapabilityRat.dyad"
+)
+
+mcmc_areas(fitRU7J8K$BETA)
+mcmc_hist(fitRU7J8K$BETA, pars = pars)
+mcmc_intervals(fitRU7J8K$BETA, pars = pars)
+
+# Picture Trace Plots AME 100,000 vs 400,000 Goodness of Fit
+par(mfrow = c(2,2), mai = c(0.5, 0.5, 0.5, 0.5))
+fitRU7J8Kparam <- cbind(fitRU7J8K$VC[, "va"], fitRU7J8K$BETA)
+colnames(fitRU7J8Kparam) <- c("VA", "Intercept", pars[-1])
+mcmc_trace(fitRU7J8Kparam, facet_args = list(ncol = 2), pars = c("VA", "Intercept"))
+
+# AME 100,000 vs 400,000
+par(mfrow = c(1,2), mai = c(1, 0.5, 0.5, 0.5))
+ht <- c(1200, 1200, 50, 100, 100)
+for (k in c(1, 4)) {
+  # Multiplicative Effects
+  xlim <- range(c(fitRU7J8K$GOF[, k], fitZNII0H$GOF[, k], fitRU7J8K$GOF[1, k])) * c(.9, 1.1)
+  hist(fitRU7J8K$GOF[-1, k],
+       prob = TRUE, col = "yellowgreen", xlim = xlim, main = "", ylab = "",
+       xlab = colnames(fitRU7J8K$GOF)[k], ylim = c(0, ht[k])
+  )
+  # AME 
+  clr <- c(col2rgb("slategrey") / 255, .75)
+  hist(fitZNII0H$GOF[-1, k],
+       prob = TRUE, add = TRUE,
+       col = rgb(clr[1], clr[2], clr[3], clr[4])
+  )
+  
+  abline(v = fitZNII0H$GOF[1, k], col = "red")
+}
+
+
+# Analysis Additive Effects
+AdditiveSelect <- c(
+  "USA", "COL", "SWZ", "ETH", "COS", "CHN",
+  "KZK", "SAF", "KEN"
+)
+AdditiveEff <- data.frame(
+  "Effect" = fitRU7J8K$APM, "Countryname" = countryname,
+  "Countrycowc" = countrycowc
+)[order(fitRU7J8K$APM), ]
+
+AdditiveSelectIndex <- match(AdditiveSelect, AdditiveEff$Countrycowc)
+
+par(mfrow = c(1, 1), mai = c(0.5, 1.5, 0.5, 0.2))
+
+plot(fitRU7J8K$APM[order(fitRU7J8K$APM)], 1:sum(current), col = c("#3D4C53"), pch = 16, xlab = "", ylab = "", yaxt = "n", cex.axis = 0.8)
+axis(2, at = AdditiveSelectIndex, labels = AdditiveEff$Countryname[AdditiveSelectIndex], las = 1, cex.axis = 0.8, family = "serif")
+abline(v = 0, col = "grey")
+
+
+
+
 

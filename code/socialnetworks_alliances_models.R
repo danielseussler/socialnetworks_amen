@@ -257,11 +257,24 @@ fitEQNO0V <- readRDS(file = "analysis/models/fitEQNO0V.rds")
 
 
 
-# Extended: Does dropping covariates yield different estimates? Drop all except GDP ECON DIST POLITY CAP
+# Extended: Does dropping covariates yield different estimates? Drop all non significant except GDP DIST ECON SharedAllies POLITY
 fitGIPKVP <- ame(allyNetMat,
-  Xdyad = Xdyad[, , c(1, 3, 7, 8)], R = 2, family = "bin", symmetric = TRUE,
+  Xrow = logGDP, Xcol = logGDP,
+  Xdyad = Xdyad[, , c(1, 3, 4, 7)], R = 2, family = "bin", symmetric = TRUE,
   rvar = FALSE, cvar = FALSE, nvar = TRUE,
   intercept = TRUE, nscan = 100000, burn = 10000, odens = 100
 )
 saveRDS(fitGIPKVP, file = "analysis/models/fitGIPKVP.rds")
 fitGIPKVP <- readRDS(file = "analysis/models/fitGIPKVP.rds")
+
+
+
+# Extended: Longest Estimation time
+fitRU7J8K <- ame(allyNetMat,
+  Xrow = logGDP, Xcol = logGDP,
+  Xdyad = Xdyad[, , -5], R = 2, family = "bin", symmetric = TRUE,
+  rvar = FALSE, cvar = FALSE, nvar = TRUE,
+  intercept = TRUE, nscan = 400000, burn = 100000, odens = 100
+)
+saveRDS(fitRU7J8K, file = "analysis/models/fitRU7J8K.rds")
+fitRU7J8K <- readRDS(file = "analysis/models/fitRU7J8K.rds")
