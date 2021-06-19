@@ -18,106 +18,142 @@ header-includes:
   - \usepackage{setspace}\onehalfspacing
   - \usepackage{natbib}\bibliographystyle{apa}
   - \interfootnotelinepenalty=10000 
+  - \usepackage[ruled,vlined]{algorithm2e} 
 keywords: Social Networks, Dyadic Data, Bayesian estimation, Latent Factors, International Relations.
-abstract: "This seminar paper introduces the Additive and Multiplicative Effects Network Model as proposed in @Hoff2021. First, a general introduction to network and relational data is given along with the statistical challenges of dyadic data analysis. Then, the Additive and Multiplicative Effects (AME) network model ist introduced and motivated. Second, an application to the international interstate alliances network is presented along with a comparison with restricted modeling approaches. The paper concludes with an outlook on extensions of the AME model. *Keywords: Dyadic Data, Bayesian Estimation, Latent Factors, International Relations.*"
+abstract: "This seminar paper introduces the Additive and Multiplicative Effects (AME) network model as summarized in @Hoff2021. First, a general introduction to network and relational data is given along with the statistical challenges of dyadic data analysis. Then, the AME network model ist introduced and motivated. Second, an application to the international interstate alliances network in 2000 is presented along with a comparison of restricted modeling approaches. The paper concludes with discussion of the limitations of chosen approach and outlook. *Keywords: Dyadic Data, Bayesian Estimation, Latent Factors, International Relations.*"
 thanks: "Replication files are available on Github (http://github.com/danielseussler). **Current version**: `r format(Sys.time(),'%B %d, %Y')`; **Corresponding author**: daniel.seussler@campus.lmu.de"
 nocite: |
-  @Hoff2007, @Hoff2005,
+  @Hoff2007, @Hoff2005
 ---
 
 \newpage
-# Introduction
+# Introduction 
 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor.Aenean ma ssa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,
 
 \newpage
 # Theory
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,
+
+Let $Y \in \mathbb{R}^{n \times n}$ be a sociomatrix describing a network and $Y_{ij}$ describing the directed relationship between actor $i$ and $j$. The former is considered to be the sender, the latter the receiver of the network tie. Because we assume the actors to be acting within a network environment, there is *a priori* no reason to assume (conditional) independence of the observations $Y_{ij}$. 
+
+First, the set $\{Y_{ij}, Y_{ik}, Y_{ik}\}$ could exhibit higher similarity within itself than with other observations, due to the common sender $i$. I. e., we could see sender (and receiver) specific heterogeneity in the propensity to send (or receive) network ties. These are first-order network effects which are observed on a nodal basis. Involving two nodes, i.e., a dyadic relationship, we could see patterns of reciprocity. This is characterized by the statistical dependency between observation $Y_{ij}$ and $Y_{ji}$, where $i \neq j$. Third, there is reason to assume dependence involving triadic relationships within a given network. These could be transitivity, balance, and clustering, and are best described by proverbs such as *the enemy of my enemy is my friend* and *my friends friend is also my friend*.
+
+For a sociomatrix $Y$$ we define the following network statistics. Note that, since we ruled out self-ties within a network, for any given sociomatrix we assume the diagonal to be undefined. Undefined observations should therefore be dropped in the following calculations.
+
+*First-order effects* characterize the actor specific heterogeneity in sending (or receiving) ties within a network. In a homogenous sender setting, we would expect the row means $\bar{Y_{i \cdot}}$ to be equal (or column means). Heterogeneity in sending or receiving ties is therefore modeled by the standard deviation of the respective row- and columnmeans: 
+$$sd.rowmean(Y) = \sum^{n}_{i = 1} \frac{1}{n} \left( \bar{Y_{i \cdot}}-\bar{Y} \right)^2 \text{, and  } sd.colmean(Y) = \sum^{m}_{i = 1} \frac{1}{m} \left( \bar{Y_{\cdot j}}-\bar{Y} \right)^2.$$
+
+*Second-order effects*, i.e., reciprocity, describe the statistical dependency of the directed relationship between two actors in the network. For the relationship between country $i$ and $j$, the correlation to the relationship of actor $j$ to $i$, where $i \neq j$, captures this effect. It is given as 
+$$dyadic.dep(Y) = corr(vec(Y), vec(Y^\top).$$
+Here, $vec(A)$ is a $m n \times 1$ column vector, which is obtained by stacking the columns of $A \in \mathbb{R}^{n \times m}$ on top of another. Naturally, for an undirected network dyadic dependency is 1. 
+
+*Third-order effects* are patterns among three nodes and corresponding statistics should capture triadic relationships   as described above. Let $E = Y - \bar{Y}$. Then 
+$$cycle.dependency(Y) = \frac{1}{n (n-1) (n-2)} \sum_{i \neq j \neq k \neq i} E_{ij} E_{jk} E_{ki},$$
+$$trans.dependency(Y) = \frac{1}{n (n-1) (n-2)} \sum_{i \neq j \neq k \neq i} E_{ij} E_{jk} E_{ik}.$$
+Optionally the statistics can be standardized with $sd(vec(Y))^3$. Naturally, for an undirected network cycle dependency equals transitive dependency. In the process of model selection, the network statistics above can be used to assess model fit. Based on draws from the posterior distribution (as we later follow a bayesian approach to model estimation), sociomatrices are simulated and respective goodness of fit statistics computed. This yields a distribution of network dependencies which is then compared to the observed statistic.
+
+The Additive and Multiplicative Effects network model is based on two types of random effects, additive and multiplicative, which are added to a generalized linear regression framework. The inclusion guarantees that the error structure takes into account the types of network dependencies inherent in dyadic observations. I introduce both separately and start with the additive component.
 
 
-**Network Effects** 
+**Additive Effects: The Social Relations Regression Model**
 
-* 1st-order: Sender (Receiver) Effects
-* 2nd-order: Reciprocity
-* 3rd-order: Homophily & Stochastic Equivalence
-* System-level - changing actor composition
-
-
-
-**Additive Effects: The Social Relations Model**
-
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. 
-```{=latex}
-\begin{align*}
+To accomodate actor-specific hetereogeneity beyond fixed covariates, sender and receiver additive random effects $(a_i, b_j)$ are included in an extended error component. Let $\mu$ be a mean or a linear predictor $\beta^\top x_{ij}$. This yields the following model: 
+$$
 \begin{aligned}
-      y_{ij} &= \mu + e_{ij} \\
+      Y_{ij} &= \mu + e_{ij} \\
       e_{ij} &= a_{i} + b_{j} + \epsilon_{ij} \\
-      \{ (a_{1}, b_{1}), \ldots, (a_{n}, b_{n}) \} &\sim N(0,\Sigma_{ab}) \\ 
-      \{ (\epsilon_{ij}, \epsilon_{ji}) : \; i \neq j\} &\sim N(0,\Sigma_{\epsilon}), \text{ where } \\
-      \Sigma_{ab} = \begin{pmatrix} \sigma_{a}^{2} & \sigma_{ab} \\ 
-      \sigma_{ab} & \sigma_{b}^2   \end{pmatrix} \;\;\;\;\; &\Sigma_{\epsilon} = \sigma_{\epsilon}^{2} \begin{pmatrix} 1 & \rho \\ 
-      \rho & 1  \end{pmatrix}
+      \{ (a_{1}, b_{1}), \ldots, (a_{n}, b_{n}) \} &\sim \mathcal{N}(0,\Sigma_{ab}) \\ 
+      \{ (\epsilon_{ij}, \epsilon_{ji}) : \; i \neq j\} &\sim \mathcal{N}(0,\Sigma_{\epsilon}), \text{ where } \\
+      \Sigma_{ab} = \begin{pmatrix} 
+      \sigma_{a}^{2} & \sigma_{ab} \\ 
+      \sigma_{ab} & \sigma_{b}^2   \end{pmatrix}, 
+      \quad \: &\Sigma_{\epsilon} = \sigma_{\epsilon}^{2} 
+      \begin{pmatrix} 1 & \rho \\ 
+      \rho & 1  \end{pmatrix}.
 \end{aligned}
-\end{align*}
-```
-Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc.
+$$
+Parameter interpretation is straight forward. Nodal random effects $a_i$, $b_j$ are independent normal gaussian variables with zero mean and covariance matrix $\Sigma_{ab}$ for $i, j = 1, \dots, n$. The covariance matrix $\Sigma_{\epsilon}$ of the error term $\epsilon$ is composed of the variance $\sigma_{\epsilon}^{2}$ and a reciprocity parameter $\rho$.
 
 
 **Multiplicative Effects: The Latent Factor Model**
 
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi.
-```{=latex}
-\begin{align*}
-  {\textbf{u}_{i},\textbf{v}_{j}} \in \mathbb{R}^{k} \;\; i,j \in \{1, \ldots, n \} \\
-\end{align*}
-```
-Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc. 
+The nodal random effects are able to capture first- and second-order network effects, but cannot account for triadic relationships within the data. This is described in the application case below, but can also be seen as follows. 
 
-```{=latex}
-\begin{align*}
-\begin{aligned}
-  \gamma(\textbf{u}_{i}, \textbf{v}_{j}) &= \textbf{u}_{i}^{T} D \textbf{v}_{j} \\
-  &= \sum_{k \in K} d_{k} u_{ik} v_{jk} \\
-  &D \text{ is a  } K \times K \text{ diagonal matrix}
-\end{aligned}
-\end{align*}
-```
-Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc.
+Let $r \in \mathbb{N}$ be the dimension of the latent space. Then 
+$$\textbf{u}_{i}, \textbf{v}_{j} \in \mathbb{R}^{r}, \quad i,j = 1, \ldots, n$$
+adding lsjflasjkd this yields as component of the extended error term. 
+$$\alpha(\textbf{u}_{i}, \textbf{v}_{j}) = \textbf{u}_{i}^{T} L \textbf{v}_{j} = \sum^{r}_{k = 1}  u_{ik} L_{kk} v_{kj}$$
+where $L$ is an $r \times r$ diagonal matrix. Determining the dimension of the latent space is not a trivial task and is to be considered alongside other modeling restrictions. Choosing lower rank dimensions facilitates visualization of the estimated effects. 
 
 
 **The AME Model: Additive + Multiplicative Effects**
 
-Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nun.
+Merging both types of random effects yields the Additive and Multiplicative network effects model, which is able to account for the network effects described above. The model is specified as 
+$$
+\begin{aligned}
+      y_{ij} &= \beta^{T} \mathbf{x}_{ij} + e_{ij} \\
+      e_{ij} &= a_{i} + b_{j}  + \alpha(\textbf{u}_{i}, \textbf{v}_{j}) + \epsilon_{ij} \text{, where}     
+\end{aligned}
+$$
+and $a_i$, $b_j$, $\alpha(\textbf{u}_{i}, \textbf{v}_{j})$ with the respective covariance structure as defined above. It is estimated using a Markov chain Monte Carlo (MCMC) approach described in the following section. 
+
+
+**Parameter Estimation**
+
+The model is estimated with a Markov chain Monte Carlo approach, summarized for the AME *without* multiplicative effects in Algorithm 1. This is in turn extended to include the multiplicative effects in Algorithm 2. Let 
+$$
+\begin{aligned}  
+  \beta &\sim \mathcal{N}_p(\beta_0, Q^{-1}_0),\\
+  \frac{1}{\sigma^2} &\sim \text{Gamma}\left(\frac{\nu_0}{2}, \frac{\nu_0 \sigma^2}{2} \right),\\
+  \Sigma^{-1} &\sim \text{Wishart} \left( \frac{\Sigma^{-1}_0}{\eta_0}, \eta_0 \right)
+\end{aligned} 
+$$
+be our prior distributions. 
 ```{=latex}
-\begin{align*}
-  \begin{aligned}
-      y_{ij,t} &= g(\theta_{ij,t}) \\ 
-      &\theta_{ij,t} = \beta^{T} \mathbf{X}_{ij,t} + e_{ij,t} \\
-      &e_{ij,t} = a_{i} + b_{j}  + \epsilon_{ij} + \alpha(\textbf{u}_{i}, \textbf{v}_{j}) \text{  , where } \\
-      &\qquad \alpha(\textbf{u}_{i}, \textbf{v}_{j}) = \textbf{u}_{i}^{T} \textbf{D} \textbf{v}_{j} = \sum_{k \in K} d_{k} u_{ik} v_{jk} \\ 
-  \end{aligned}
-\end{align*}
+\begin{algorithm}[H]
+Initalize unkown variables\;
+1. Simulate $\{ \beta, a, b \}$ given $Y, \Sigma, \sigma^2, \rho$\;
+2. Simulate $\sigma^2$ given $Y, \beta, a, b, \rho$\;
+3. Simulate $\rho$ given $Y, \beta, a, b, \sigma^2$\; 
+4. Simulate $\Sigma$ given $a, b$\; 
+5. Simulate missing values of $Y$ given $\beta, a, b, \rho, \sigma^2$ and observed values of $Y$.
+ \caption{Gibbs Sampling for the SRRM, P. D. Hoff (2021).}
+\end{algorithm}
 ```
-Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc.
+To apply the Gibbs sampling, we derive the full conditionals for the unknown variables. 
+$$p(E \vert \sigma^2, \rho) \propto (\sigma^2)^{\frac{-n^2}{2}} (1-\rho^2)^{-\frac{1}{2} \binom{N}{k}} (1-\rho^2)^{-\frac{n}{2}} \exp^{-\frac{(SS_1 + SS_2)}{2\sigma^2}}$$
 
--@minhas_hoff_ward_2019
--@Hoff2021
+where $SS_1 = \sum_{i<j}$ and $SS_2 = \sum^{n}_{i=1} \frac{e^2_{ii}} {1+ \rho}$.
+
+Full conditional 
+
+$$\frac{1}{\sigma^2} \sim \text{Gamma}\left( \frac{1}{2}(\nu_0 + n^2), \frac{1}{2} (\nu_0 \sigma^2_0 + SS_1 + SS_2) \right)$$
+
+And lastly 
+$$
+\begin{aligned}
+p(\beta \vert y, \Sigma) &\propto p(y \vert \beta, \Sigma) \cdot p(\beta) \\
+&\propto \exp\{-\frac{1}{2} \beta^\top (Q_0 + Q) \beta + \beta^\top(Q_0\beta_0 + l)\} \\
+&\propto \mathcal{N}_p( (Q_0 + Q)^{-1}(Q_0\beta_0 + l), (Q_0 + Q)^{-1})
+\end{aligned}
+$$
 
 
-**Parameter Estimation and Goodness of Fit**
+Adding multiplicative effects is accomplished as follows:
 
-Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc,
-
+```{=latex}
+\begin{algorithm}[H]
+Initalize unkown variables\;
+1. Update $\{ \beta, a, b, \sigma^2, \rho, \Sigma \}$ and the missing values of $Y$ using Algorithm 1, but with $Y$ replaced by $Y$ - $UV^T$\;
+2. Simulate $\Psi^{-1} \sim$ Wishart $((\Psi_0 \kappa_0 + [UV]^\top [UV])^{-1}, \kappa_0 + n)$, where $[UV]$ is the $n \times 2r$ matrix equal to the column-wise concatenation of $U$ and $V$\;
+3. For each $k = 1, \dots, r$, simulate the $r$-th columns of $U$ and $V$ from their full conditional distributions. 
+ \caption{Gibbs Sampling for the AME, P. D. Hoff (2021).}
+\end{algorithm} 
+```
 
 **Extensions**
 
-*1. Count, Ordinal and Censored Data*
+Note that by now we have assumed a normal distribtution of the outcome variable. However, the presented framework can be extended in several different ways. For one thing, additional types of outcome variables can be specified, such as binary, count, ordinal, and censored data. Ordinal data includes ranked categorical outcomes, such as *reject, neutral, agree*.  This requires changes to the sampling algorithms as described above. For the specific changes to the algorithms and full conditionals, as for example required in the binary case for the following application case, see @Hoff2021. Estimation of missing data points could be an objective. In the bayesian estimation approach, imputation of missing data is easily available through posterior simulation. A third possibility is an extension to include longitudinal or replicated networks, where a (possibly changing) set of actors is observed at different time points. The R-package `amen` provides the option to include replicated data, where time is modeled by including lagged covariates. A different approach is presented in @dynamicAMEN, where the AME network model is embedded in a Gaussian process. 
 
-- @hoff2015longitudinal
-
-*2. Missing Data*
-
-
-*3. Longitudinal Networks* The last 
 
 \newpage
 # Application Case: Interstate Defence Alliances
@@ -163,7 +199,7 @@ table_ame <- function(object, ...){
   
   
   tmp <- cbind(apply(fit$VC, 2, mean), apply(fit$VC, 2, sd))
-  tmp <- cbind(round(tmp, 3), array("-", dim = c(nrow(tmp), 1)))
+  tmp <- cbind(round(tmp, 3), array(" ", dim = c(nrow(tmp), 1)))
 
   out <- rbind(out, tmp)
   return(out)
@@ -207,7 +243,7 @@ I follow the specification of @dynamicAMEN and @geometryofsecurity to define nod
   $$CapabilityRat_{ij} = \log\left(\frac{CINC_s}{CINC_w}\right).$$
 At the provided precision, three countries are indistinguishable from 0. I impute these data points with 0.5 times of the second to lowest value.
 
-Note that each dyadic fixed effect is symmetric. To validate the network approach taken in this application case, I estimate four models with different restrictions. One with additive and multiplicative effects (AME), one with only additive effects (AE), one with only multiplicative effects (ME), and one without any types of random effects (NO). The latter one yields a classical (bayesian) probit regression, which does not take into account any type of network effects. This serves as benchmark for our validation. Based on preliminary modeling, I choose rank two for the multiplicative effects^[A two dimensional latent space facilitates the visualization in the analysis. Moreover, choosing a higher dimension of R = 5 for the latent space did not improve model fit (not shown here, see code appendix for further comparisons).]. The results presented in this section are based on 100,000 Gibbs iterations and a burn-in of 10,000. Output density is set at 100. This long sampling and stark thinning is due to symmetric matrices of the multiplicative part, which results in considerably slow mixing of the MCMC chains [see @hoff2015dyadic, p. 44] and high autocorrelation of the estimates.
+Note that each dyadic fixed effect is symmetric. To validate the network approach taken in this application case, I estimate four models with different restrictions. One with additive and multiplicative effects (AME), one with only additive effects (AE), one with only multiplicative effects (ME), and one without any types of random effects (NO). The latter one yields a classical (bayesian) probit regression, which does not take into account any type of network effects. This serves as benchmark for our validation. Based on preliminary modeling, I choose rank two for the multiplicative effects.^[A two dimensional latent space facilitates the visualization in the analysis. Moreover, choosing a higher dimension of R = 5 for the latent space did not improve model fit (not shown here, see code appendix for further comparisons).] The results presented in this section are based on 100,000 Gibbs iterations and a burn-in of 10,000. Output density is set at 100. This long sampling and stark thinning is due to symmetric matrices of the multiplicative part, which results in considerably slow mixing of the MCMC chains [see @hoff2015dyadic, p. 44] and high autocorrelation of the estimates.
 
 As elaborated in the subsection on Estimation and Goodness of Fit, model assessment is performed using the goodness of fit statistics of the posterior predictive draws. Figure \@ref(fig:gofstats) illustrates this comparison for our models. The red line indicates the observed goodness of fit statistic for the sociomatrix. On the left, we have a comparison of first-order network statistics, on the right, third-order. As our matrix is symmetric, second-order dependence, i.e. reciprocity, is obsolete and thus omitted.
 
@@ -230,9 +266,9 @@ modelAMEvsNO <- cbind(table_ame(fitZNII0H),
 rownames(modelAMEvsNO)[1] <- "Intercept"
 
 modelAMEmsg <- paste("Effective Sample Size: ", toString(round(coda::effectiveSize(fitZNII0H$BETA))), ".", sep = "")
-modelNOmsg <- paste("Effective Sample Size: ", toString(round(coda::effectiveSize(fitDASD8R$BETA))), ".", sep ="") 
+modelNOmsg <- paste("Effective Sample Size: ", toString(round(coda::effectiveSize(fitDASD8R$BETA))), ".", sep = "") 
 
-modelAMEvsNO[10:11, 4:5] <- "-"
+modelAMEvsNO[10:11, 4:5] <- " "
 
 kbl(modelAMEvsNO, booktabs = T, caption = "Model Comparison") %>%
   kable_styling(full_width = T) %>%
@@ -250,7 +286,7 @@ rownames(modelAEvsME)[1] <- "Intercept"
 modelAMmsg <- paste("Effective Sample Size: ", toString(round(coda::effectiveSize(fitCPLTUK$BETA))), ".", sep = "") 
 modelMEmsg <- paste("Effective Sample Size: ", toString(round(coda::effectiveSize(fitX7XDFO$BETA))), ".", sep = "") 
 
-modelAEvsME[10:11, 4:5] <- "-"
+modelAEvsME[10:11, 4:5] <- " "
 
 kbl(modelAEvsME, booktabs = T, caption = "Model Comparison") %>%
   kable_styling(full_width = T) %>%
@@ -286,38 +322,67 @@ knitr::include_graphics("figures/traceplotAmeR2.pdf")
 
 Figure \@ref(fig:traceplotAMEr2) shows the trace plots for the nine fixed effects and the variance of the additive effect in this estimation. Both multimodality and persistent trending are apparent, even *after* strong thinning of 1 to 100. Specifically for the variance of the additive effect and the intercept, which suggests issues with the mixing of the MCMC chains. This is also indicated by the low effective sample size (Table \@ref(tab:modelcomparison1)) for the specifications including multiplicative effects.
 
-To adapt the model I estimated the following changed specifications of the AME rank 2 model. First, I dropped the Intercept, which yielded worse effective sample sizes. Predictably, the variance of the additive effect increased, along with a change of sign in the fixed effects estimates of *GDP (log p.c.), ConflictInd*, and *CapabilityRat*. Overall it did not seem to improve the estimation.^[This model and the ones following can be found in the online code appendix and are not shown here.]
+To adapt the model, I estimated the following changed specifications of the AME rank 2 model. First, I dropped the Intercept, which yielded worse effective sample sizes. Predictably, the variance of the additive effect increased, along with a change of sign in the fixed effects estimates of *GDP (log p.c.), ConflictInd*, and *CapabilityRat*. Overall it did not seem to improve the estimation.^[This and the following model can be found in the online code appendix and are not shown here.]
 
 Next, I dropped the two covariates with the lowest effective sample size, *SharedAllies* and *ConflictInd*. Except for the intercept, which increased by a third, the estimated variance of the additive effect and the fixed effect estimates remained virtually the same. The issues with the trace plots and the low effective sample size remained. 
 
-Then, I removed all non-significant fixed covariates, leaving only the *intercept, GeoDistance, EconomicDep, SharedAllies*, and *PoliticalSim*. [INSERT RESULTS] Again, these changes did not seem to substantially improve the model. This posits the general question of the inclusion of fixed covariates in the model. Estimating an AME rank 2 network model without *any* fixed effects does *not* depress the representation of network dependencies. In practice, this makes covariate selection troublesome, which leads to the following section.
+Then, I removed all non-significant fixed covariates, leaving only the *Intercept, GeoDistance, EconomicDep, SharedAllies*, and *PoliticalSim*. Again, these changes did not seem to substantially improve the model, the results are shown in Table \@ref(tab:modelcomparison3). This posits the general question of the inclusion of fixed covariates in the model. Estimating an AME rank 2 network model without *any* fixed effects did *not* depress substantially the representation of network dependencies in the estimated model. In practice, this makes covariate selection troublesome.
 
+Lastly, longer burn-in and sampling durations could potentially improve the estimates. However, drastically raising these numbers would push computational feasibility. To verify robustness with respect to the length of the MCMC estimation, I raise the number of iterations to 400,000 after a burn-in period of 100,000.^[The models of the first comparison took about two hours to estimate. Quadrupling the number of iterations in the last model required about ten hours to compute.] Output density is kept the same. Posterior estimates for this model are in Table \@ref(tab:modelcomparison3). The intercept estimate is lower, and the estimate for *ConflictInd* is now negative, although still non-significant. The other fixed-effects estimates are qualitative as before. Moreover, the effective sample size has *not* improved. In the random effects, we see drastically increased variance of the additive effect and the corresponding standard error. This is also apparent upon further inspection of the trace plots in Figure \@ref(fig:ame4xtrace). Figure \@ref(fig:gofstats100vs400) shows a comparison of the posterior goodness of fit statistics for both AME rank 2 models, with the only difference in the length of the MCMC estimation. The increase yields narrower distributions for the goodness of fit statistics but does not improve on model fit.
+
+```{r modelsextended}
+fitGIPKVP <- readRDS(file = "models/fitGIPKVP.rds") # AME Drop all non significant 
+fitRU7J8K <- readRDS(file = "models/fitRU7J8K.rds") # AME quadruble iterations
+```
+
+```{r modelcomparison3, results='asis'}
+
+modelAMErestr <- rbind(table_ame(fitGIPKVP)[1:3, ], rep(" ", 3), table_ame(fitGIPKVP)[4:5, ], 
+                       rep(" ", 3), table_ame(fitGIPKVP)[6, ], rep(" ", 3), table_ame(fitGIPKVP)[7:8, ])
+  
+modelAMErestr <- cbind(modelAMErestr, table_ame(fitRU7J8K))
+rownames(modelAMErestr) <- rownames(table_ame(fitRU7J8K))
+rownames(modelAMErestr)[1] <- "Intercept"
+
+modelAME1msg <- paste("Effective Sample Size: ", toString(round(coda::effectiveSize(fitGIPKVP$BETA))), ".", sep = "") 
+modelAME2msg <- paste("Effective Sample Size: ", toString(round(coda::effectiveSize(fitRU7J8K$BETA))), ".", sep = "") 
+
+kbl(modelAMErestr, booktabs = T, caption = "Model Comparison") %>%
+  kable_styling(full_width = T) %>%
+  column_spec(1, width = "4cm") %>%
+  pack_rows("Additive Effects", 10, 11, latex_gap_space = "1em") %>%
+  add_header_above(c(" " = 1 , "AME (R=2, selected)" = 3, "AME (R=2, 4x)" = 3)) %>%
+  footnote(number = c(modelAME1msg, modelAME2msg))
+```
+
+```{r ame4xtrace, fig.cap ="Trace plots for estimated posterior variance of the additive effect and the intercept. Results based on 400,000 iterations and a burn-in period of 100,000. Chains were thinned by keeping every $100^{th}$ sample.", fig.align='center', out.width="95%"}
+knitr::include_graphics("figures/Ame4xtraceplot.pdf")
+```
+
+```{r gofstats100vs400, fig.cap ="Posterior Goodness of Fit statistics for model estimates with 100,000 iterations (grey) and 400,000 iterations (green). A narrower distribution can be identified for the green model.", fig.align='center', out.width="95%"}
+knitr::include_graphics("figures/gofstats100vs400.pdf")
+```
 
 
 **Limitations and Further Approaches**
 
-Before entering the limitations and the discussion on the AME network model, three possible approaches to improve the present issues:
+Before entering the limitations and the discussion on the AME network model, two possible approaches to improve the present issues:
 
-*1.* These changes in model specifications did only affect dyadic covariates. Given the persistent trend in the variance of the additive effect and the intercept, one could hypothesize that the actor-specific propensity of tie formation is not sufficiently taken into account within the model. This could be alleviated by adding nodal covariates. Unfortunately, there was no evident political or economical factor that could have been included. One option could be an index of vote patterns in the United Nations, along the lines of the outcome variable in @dynamicAMEN. This is left for further exploration. 
-
-
-*2.* Wide posterior intervals indicate a wide distribution about the parameter estimates of the intercept and the variance of the additive effects. This could present problems with the posterior estimation^[See for example @mcmcissues.]. A natural step would be to specify different starting values as well as stronger priors, specifically for the intercept. The network density^[This calculation takes into account every state in the data.] ranges from `r round(range(gden(allyNet, mode = "digraph"))[1], 3)` to `r round(range(gden(allyNet, mode = "digraph"))[2], 3)` in the time-frame 1981 - 2000. Assuming this low density is a reliable characteristic of the interstate alliance network, a narrower prior distribution, could be selected for the intercept.
-
-*3.* Lastly, longer burn-in and sampling durations could potentially improve the estimates. However, drastically raising these numbers would push computational feasibility, as every model in this paper already took around two hours to estimate. 
-
-The low effective sample size and the troublesome trace plots of the AME network model leave doubts about the validity of statistical inference in this particular application case. Further analysis to improve the model fitting procedure would need to tackle the MCMC estimation procedure with more elaborated tools on the analysis of different chains as the visuals provided in this seminar paper. The present issues could have their roots in different aspects of the chosen data set. The absence of strong predictors for the actor-specific propensity of tie formation, for example. A very low network density, along with large heterogeneity in the network actors too; as well as the symmetric, binary outcome.
+*1.* These changes in model specifications did only affect dyadic covariates. Given the persistent trend in the variance of the additive effect and the intercept, one could hypothesize that the actor-specific propensity of tie formation is not sufficiently considered within the models' fixed effects. This could be alleviated by adding more nodal covariates. Unfortunately, there was no evident political or economic factor that could have been included. One option could be to construct an index of vote patterns in the United Nations, along the lines of the outcome variable in @dynamicAMEN. This is left for further exploration. 
 
 
+*2.* Wide posterior intervals indicate a wide distribution about the parameter estimates of the intercept and the variance of the additive effects. This could present problems with the posterior estimation.^[See for example @mcmcissues.] A natural step would be to specify different starting values as well as stronger priors, specifically for the intercept. The network density^[This calculation takes into account every state in the data, it therefore slightly understimates the density provided before.] ranges from `r round(range(gden(allyNet, mode = "digraph"))[1], 3)` to `r round(range(gden(allyNet, mode = "digraph"))[2], 3)` in the time-frame 1981 - 2000. Assuming this low density is a reliable characteristic of the interstate alliance network, a narrower prior distribution, could be selected for the intercept.
+
+The low effective sample size and the troublesome trace plots of the AME network model leave doubts about the validity of statistical inference in this application case. Further analysis to improve the model fitting procedure would need to tackle the MCMC estimation procedure with more elaborated tools on the analysis of different chains as the visual approach provided in this seminar paper. The present issues could have their roots in different aspects of the chosen data set. The absence of strong predictors for the actor-specific propensity of tie formation, for example. A very low network density, along with large heterogeneity in the network actors too; as well as the symmetric, binary outcome.
+
+\newpage
 # Discussion
 
-The Additive and Multiplicative Effects network model provides an extension to the already familiar generalized linear model framework to network data. By adding a node-specific additive random effect and a latent space as a multiplicative effect, an AME model is able to capture a range of statistical network effects that are inherent in dyadic data and ordinary regression frameworks that fail to account for (Figure \@ref(fig:gofstats). The deliberate omission of these effects can lead to significantly biased estimates of effect sizes. 
+The Additive and Multiplicative Effects network model provides an extension to the already familiar generalized linear model framework to network data. By adding a node-specific additive random effect and a latent space as a multiplicative effect, an AME model can capture a range of statistical network effects that are inherent in dyadic data and ordinary regression frameworks that fail to account for (Figure \@ref(fig:gofstats)). The deliberate omission of these effects can lead to significantly biased estimates of effect sizes. In this regard, the AME Model presented in @Hoff2021 provides an easy-to-use and interpretable model for network data. 
 
-In this regard, the AME Model presented in @Hoff2021 provides an easy-to-use and interpretable model for network data. 
+However, the Bayesian estimation procedure makes it difficult for non-statisticians and statisticians alike to pin down the issues in the estimation, for example in this paper, and thus to establish valid statistical inference. It requires furthermore a different approach to model assessment and goodness of fit, specifically with covariate selection in mind. 
 
-However, the Bayesian estimation procedure makes it difficult for non-statisticians and statisticians alike to pin down the issues in the estimation, for example in this paper, to establish valid statistical inference. It requires furthermore a different approach to model assessment and goodness of fit, specifically with covariate selection in mind. 
-
-@violenceNetworks apply the AME network model to study civil conflict in Nigeria and the implications of the emergence of Boko Haram. This model has also been expanded to include longitudinal networks or replicated data. @Minhas_Hoff_Ward_2016 use a time series approach of the AME network model to study international relations, in this case, the type of interaction chosen by each state. @dynamicAMEN model UN Voting Behaviour in a similar fashion with a longitudinal extension of the AME framework which relies on Gaussian processes.
-
+@violenceNetworks apply the AME network model to study civil conflict in Nigeria and the implications of the emergence of Boko Haram. This model has also been expanded to include longitudinal networks or replicated data. @Minhas_Hoff_Ward_2016 use a time series approach of the AME network model presented in @hoff2015longitudinal to study international relations, in this case, the type of interaction chosen by each state. @dynamicAMEN model UN Voting Behaviour in a similar fashion with a longitudinal extension of the AME framework which relies on Gaussian processes.
 
 \newpage
 # References
