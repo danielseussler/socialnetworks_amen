@@ -1,10 +1,11 @@
 # Seminar on Statistical Modelling of Social Networks
 # Topic: The Additive and Multiplicative Effects Network Model
+
 # Cultural Similarity: Joint Language Indicator
 # Data from the replication files of Warren 2010
 
-# Data from 2000 doesnt seem to be coherent. Identity Matrix?
-# I take data from 1985.
+# Data from 2000 doesnt seem to be correct, US CAN no shared language
+# Year 1985 taken
 
 library(countrycode)
 library(network)

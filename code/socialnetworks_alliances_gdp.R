@@ -1,6 +1,8 @@
 # Seminar on Statistical Modelling of Social Networks
 # Topic: The Additive and Multiplicative Effects Network Model
+
 # GDP pc Data from World Development Indicators
+# WDI Package 
 
 library(countrycode)
 library(tidyverse)

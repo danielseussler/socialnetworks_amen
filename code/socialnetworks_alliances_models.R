@@ -5,7 +5,6 @@
 library(amen)
 library(bayesplot)
 library(network)
-library(statnet)
 library(scales)
 library(tictoc)
 library(xergm.common)
@@ -42,12 +41,12 @@ polity <- get.vertex.attribute(allyNet, "polity")
 any(is.na(cinc))
 any(is.na(polity))
 
-# Load Distance Trade Culture Conflict -----------------------------------------
+# Load GDP Distance Trade Culture Conflict -------------------------------------
+logGDP <- readRDS(file = "data/logGDP.rds")
 GeoDistance <- readRDS(file = "data/GeoDistance.rds")
 EconomicDep <- readRDS(file = "data/EconomicDep.rds")
 CulturalSim <- readRDS(file = "data/CulturalSim.rds")
 ConflictInd <- readRDS(file = "data/ConflictInd.rds")
-logGDP <- readRDS(file = "data/logGDP.rds")
 
 
 
@@ -128,23 +127,22 @@ anova(lm(c(allyNetMat) ~ c(Rowcountry) + c(Colcountry)))
 
 # Check Model Assumptions Indicates a large degree of heterogeneity, more as if a_i or b_i were all zero.
 
-
-rmean <- rowMeans(Y, na.rm = TRUE)
-cmean <- colMeans(Y, na.rm = TRUE)
-muhat <- mean(Y, na.rm = TRUE)
+rmean <- rowMeans(allyNetMat, na.rm = TRUE)
+cmean <- colMeans(allyNetMat, na.rm = TRUE)
+muhat <- mean(allyNetMat, na.rm = TRUE)
 ahat <- rmean - muhat
 bhat <- cmean - muhat
 
-# additive "exporter" effects and importer effects
+# additive effects and importer effects
 head(sort(ahat, decreasing = TRUE))
-head(sort(bhat, decreasing = TRUE)) # unsurprisingly the same as before
+head(sort(bhat, decreasing = TRUE)) 
 
 # covariance and correlation between row and column effects - same as we have dyadic data
 cov(cbind(ahat, bhat))
 cor(ahat, bhat)
 
 # estimate of dyadic covariance and correlation, does it make sense here?
-R <- Y - (muhat + outer(ahat, bhat, "+"))
+R <- allyNetMat - (muhat + outer(ahat, bhat, "+"))
 cov(cbind(c(R), c(t(R))), use = "complete")
 cor(c(R), c(t(R)), use = "complete")
 
@@ -163,7 +161,7 @@ saveRDS(fitZNII0H, file = "analysis/models/fitZNII0H.rds")
 fitZNII0H <- readRDS(file = "analysis/models/fitZNII0H.rds")
 
 
-# AME without multiplicative effects (SRM Model)
+# AME without multiplicative effects (SRRM Model)
 fitCPLTUK <- ame(allyNetMat,
   Xrow = logGDP, Xcol = logGDP,
   Xdyad = Xdyad[, , -5], R = 0, family = "bin", symmetric = TRUE,
@@ -233,7 +231,6 @@ saveRDS(fitFVAEMT, file = "analysis/models/fitFVAEMT.rds")
 fitFVAEMT <- readRDS(file = "analysis/models/fitFVAEMT.rds")
 
 
-
 # Extended: Drop all covariates
 fitSIXQ7Y <- ame(allyNetMat,
   R = 2, family = "bin", symmetric = TRUE,
@@ -242,7 +239,6 @@ fitSIXQ7Y <- ame(allyNetMat,
 )
 saveRDS(fitSIXQ7Y, file = "analysis/models/fitSIXQ7Y.rds")
 fitSIXQ7Y <- readRDS(file = "analysis/models/fitSIXQ7Y.rds")
-
 
 
 # Extended: Does dropping covariates yield different estimates? Drop SharedAllies ConflictInd
@@ -256,7 +252,6 @@ saveRDS(fitEQNO0V, file = "analysis/models/fitEQNO0V.rds")
 fitEQNO0V <- readRDS(file = "analysis/models/fitEQNO0V.rds")
 
 
-
 # Extended: Does dropping covariates yield different estimates? Drop all non significant except GDP DIST ECON SharedAllies POLITY
 fitGIPKVP <- ame(allyNetMat,
   Xrow = logGDP, Xcol = logGDP,
@@ -268,8 +263,7 @@ saveRDS(fitGIPKVP, file = "analysis/models/fitGIPKVP.rds")
 fitGIPKVP <- readRDS(file = "analysis/models/fitGIPKVP.rds")
 
 
-
-# Extended: Longest Estimation time
+# Extended: 4x Estimation time
 fitRU7J8K <- ame(allyNetMat,
   Xrow = logGDP, Xcol = logGDP,
   Xdyad = Xdyad[, , -5], R = 2, family = "bin", symmetric = TRUE,

@@ -1,5 +1,6 @@
 # Seminar on Statistical Modelling of Social Networks
 # Topic: The Additive and Multiplicative Effects Network Model
+
 # Create conflict indicator
 
 library(network)
