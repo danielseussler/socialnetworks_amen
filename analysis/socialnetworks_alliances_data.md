@@ -9,7 +9,6 @@ full dataset (Cranmer, Desmarais and Menninga 2012; Cranmer, Desmarais and
 Kirlkand 2012) contains a large number of countries and a much longer time
 series.
 
-
 **allyNet** is a list of network objects at 20 time points, 1981–2000, containing
 undirected defense alliance networks. In addition to the alliance ties, each
 network object contains three vertex attributes. cinc is the "CINC" or
@@ -36,12 +35,4 @@ year.
 indicates whether two states were in a militarized interstate dispute in the
 respective year.
 
-We have COW Countrycodes: [COW Country Codes — Correlates of War](https://correlatesofwar.org/data-sets/downloadable-files/cow-country-codes/cow-country-codes/view)
-
-
-
-**Other Important Links**
-
-[network.pdf (r-project.org)](https://cran.r-project.org/web/packages/network/network.pdf)
-
-E
+COW Countrycodes: [COW Country Codes — Correlates of War](https://correlatesofwar.org/data-sets/downloadable-files/cow-country-codes/cow-country-codes/view)
