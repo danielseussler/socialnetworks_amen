@@ -1,12 +1,10 @@
-## Social Networks: AMEN Models
-Work in Progress. Replication Code for my Seminar Paper on Statistical Modelling of 
-Social Networks: Additive and Multiplicative Effects Network Models. An Application
-on the Alliances Data Set.
+Replication Code for the Seminar on Statistical Modelling of Social Networks: The Additive and Multiplicative Effects Network Model. Application Case: Interstate Defence Alliances in 2000.
 
 
-## References
-Hoff, P.D. (2018) “Additive and multiplicative effects network models”. arXiv:1807.08038.
+### References
+Peter Hoff. "Additive and Multiplicative Effects Network Models." Statist. Sci. 36 (1) 34 - 50, February 2021. https://doi.org/10.1214/19-STS757.
 
-Hoff, P.D. (2015) “Dyadic data analysis with amen”. arXiv:1506.08237.
+Cranmer, Skyler J., Bruce A. Desmarais, and Elizabeth J. Menninga. 2012. “Complex Dependencies in the Alliance Network.” Conflict Management and Peace Science 29 (3): 279–313. https://doi.org/10.1177/0738894212443446.
 
-Leeds, Brett Ashley, Jeffrey M. Ritter, Sara McLaughlin Mitchell, and Andrew G. Long. 2002. Alliance Treaty Obligations and Provisions, 1815-1944. International Interactions 28: 237-260.
+Cranmer, Skyler, Bruce Desmarais, and Justin Kirkland. 2012. “Toward a Network Theory of Alliance Formation.” International Interactions - INT INTERACT 38 (July): 295–324. https://doi.org/10.1080/03050629.2012.677741.
+
