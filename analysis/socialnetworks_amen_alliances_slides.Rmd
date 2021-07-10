@@ -2,7 +2,7 @@
 title: "The Additive and Multiplicative Effects Network Model"
 subtitle: 'Seminar on Statistical Modeling of Social Networks'
 author: "Daniel A. Seussler Becerra"
-date: "14. / 15. Juli 2021"
+date: "16 July 2021"
 fontsize: 9pt
 output:
   beamer_presentation:  
@@ -65,6 +65,7 @@ fitDASD8R <- readRDS(file = "models/fitDASD8R.rds") # No Effects
 ```
 
 ```{r modelsextended}
+fitFVAEMT <- readRDS(file = "models/fitFVAEMT.rds") # AME R=2 Drop Intercept
 fitGIPKVP <- readRDS(file = "models/fitGIPKVP.rds") # AME Drop all non significant 
 fitRU7J8K <- readRDS(file = "models/fitRU7J8K.rds") # AME quadruble iterations
 ```
@@ -76,16 +77,18 @@ fitRU7J8K <- readRDS(file = "models/fitRU7J8K.rds") # AME quadruble iterations
 
 - Networks are ubiquitous in Social Science applications. 
 - Possible Research Questions: 
-    - Network statistics as reciprocity, number of communities, etc..
-    - Estimate structural parameters, including associated uncertainty. 
-    - Identify drivers of longitudinal changes in networks.
+    - Actor behaviour (e.g. reciprocity), extent of network effects.
+    - Exploratory analysis of communities and network structures.
+    - Statistical Inference on structural parameters, i.e., estimates and uncertainty. 
+    - Identification of drivers of longitudinal changes in observed networks.
 
 \bigskip
-Nomenclature
+Nomenclature:
 
-- Vertices or Nodes, named actors in a network.
-- Edges, Dyads or ties, the relationship between two actors.
-    - Can be valued, ordered, or binary. As well as directed or undirected. 
+- Vertices or nodes, named actors in a network.
+- Edges, dyads or ties, the relationship between two actors.
+    - A tie can be valued, ordered, or binary. 
+    - Possibility to distinguish between directed and undirected ties.
 
 
 ## Statistical Point of View
@@ -112,12 +115,12 @@ $$
 
 *Second-order network effects*
 
-- Dyad-level network effects. Reciprocity, for example. 
+- Dyad-level network effects, e.g. reciprocity. 
   
 *Third-order network effects* 
 
-- Triad-level network effects. Balance, Transitivity and Clustering, for example. 
-- Commonly described by proverbs: 
+- Triad-level network effects, includes Balance, Transitivity and Clustering. 
+- Conceptually described by proverbs: 
     - *my friends' friend is also my friend*, and 
     - *the enemy of my enemy is my friend*.
 
@@ -134,10 +137,17 @@ $$
 
 The AME framework has been applied to a variety of problems in the social sciences:
 
-- @violenceNetworks study the implications of Boko Haram entering the Nigerian civil conflict.
-- @ameSyria apply the AME network model on the Syrian civil conflict.
-- @Minhas_Hoff_Ward_2016 use a VAR extension to model international relations.
-- @dynamicAMEN present a longitudinal extension to the AME framework to study UN voting patterns over time.
+\bigskip
+- @violenceNetworks study the dynamic structure of the Nigerian civil conflict, analysing the trajectory of the network after the emergence of Boko Haram. 
+
+\bigskip
+- @ameSyria apply the AME network model on the Syrian civil conflict to understand idealogical relationships and implications on conflict fractions.
+
+\bigskip
+- @Minhas_Hoff_Ward_2016 model state actions in international relations in a time series approach, extending the AME framework as presented in @hoff2015longitudinal.
+
+\bigskip
+- @dynamicAMEN also presents a longitudinal extension to the AME framework to study UN voting patterns over time.
 
 
 # Theory
@@ -146,9 +156,11 @@ The AME framework has been applied to a variety of problems in the social scienc
 
 *First-order effects* 
 
-Let $\{ \mu_i: \: 1, \dots, n\}$ be the the set of rowmeans, $\{ \eta_i: \: 1, \dots, n\}$ of columnmeans^[Undefined (NA) observations are dropped.]. Then,
+Let $\{ \mu_i: \: 1, \dots, n\}$ be the the set of row-means, $\{ \eta_i: \: 1, \dots, n\}$ of column-means^[Undefined (NA) observations are dropped.]. Then,
 $$sd.rowmean(Y) = \frac{1}{n} \sum^{n}_{i = 1} \left( \mu_i - \bar{\mu_i} \right)^2 \text{, and   } sd.colmean(Y) = \frac{1}{n} \sum^{n}_{i = 1} \left( \eta_i - \bar{\eta_i} \right)^2.$$
-Note: Presence of actor-specific heterogeneity can also be tested using an ordinary ANOVA F-test for comparison of group means. 
+\bigskip
+
+**Note:** Presence of actor-specific heterogeneity can also be tested using an ordinary ANOVA F-test for comparison of group means. 
 
 ---
 
@@ -156,7 +168,8 @@ Note: Presence of actor-specific heterogeneity can also be tested using an ordin
 
 Reciprocity in the network can be described by the correlation of the relationship between actor $i$ and $j$, to the relationship of actor $j$ to $i$, if $i \neq j$. Then,^[Here, $vec(A)$ is a $m n \times 1$ column vector, which is obtained by stacking the columns of $A \in \mathbb{R}^{n \times m}$ on top of another.]
 $$dyadic.dependency(Y) = corr\left( vec(Y), vec\left( Y^T \right) \right).$$
-Naturally, for an undirected network dyadic dependency is 1. 
+
+- Naturally, for an undirected network dyadic dependency is 1. 
 
 ---
 
@@ -165,9 +178,10 @@ Naturally, for an undirected network dyadic dependency is 1.
 are patterns among three nodes. Let $E = Y - \bar{Y}$. Then,
 $$cycle.dependency(Y) = \frac{1}{n (n-1) (n-2)} \sum_{i \neq j \neq k \neq i} E_{ij} E_{jk} E_{ki},$$
 $$trans.dependency(Y) = \frac{1}{n (n-1) (n-2)} \sum_{i \neq j \neq k \neq i} E_{ij} E_{jk} E_{ik}.$$
-Naturally, for an undirected network cycle dependency equals transitive dependency. Optionally the statistics can be standardized with $sd(vec(Y))^3$.
 
-Alternatively, $E$ can be defined as the residual of an ordinary regression.
+- Naturally, for an undirected network cycle dependency equals transitive dependency. 
+- Optionally the statistics can be standardized with $sd(vec(Y))^3$.
+- Alternatively, $E$ can be defined as the residual of an ordinary regression.
 
 ## Starting Point: A Generalized Linear Regression
 
@@ -178,14 +192,16 @@ $$
 \theta_{ij} &= \boldsymbol{\beta}^T \mathbf{x}_{ij}
 \end{aligned}
 $$
-where $h$ is an invertible response function, $g = h^{-1}$ the link function. Assuming a normal density for the conditional distribution, we yield the identity as link, i. e., $\mu_{ij} = \theta_{ij}$ and:
+where $h$ is an invertible response function, $g = h^{-1}$ the link function. 
+
+Assuming a normal density for the conditional distribution, we yield the identity as link function, i. e., $\mu_{ij} = \theta_{ij}$ and:
 
 $$y_{ij} \: \vert \: x_{ij} \sim \mathcal{N}(\mu_{ij},\: \sigma^2)$$
 
 ## Additive Effects 
-- Idea: Model actor-specific heterogeneity with additive random effects.
-- For this, define an extended error component $e_{ij}$.
+- Idea: model actor-specific heterogeneity with additive random effects.
 - Also known as the Social Relations Regression Model (SRRM).
+- For this, define an extended error component $e_{ij}$.
 
 Let $\mu$ be a mean or linear predictor $\boldsymbol{\beta}^T \mathbf{x}_{ij}$, then:
 $$
@@ -243,10 +259,11 @@ $$
 $$
 with the component $\vert z_i - z_j\vert$.
 
+\bigskip
 **Issue:** The latent space component does confound stochastic equivalence and homophily. 
 
 
-## Multiplicative Effects Component
+## Multiplicative Effects: Component
 
 **Solution:** @Hoff2007 defines the multiplicative component as
 $$\alpha(\mathbf{u}_{i}, \mathbf{v}_{j}) = \mathbf{u}_{i}^{T} \mathbf{v}_{j}$$
@@ -256,11 +273,11 @@ to properly generalize symmetric matrices. Furthermore, let
 $$\{ (\mathbf{u}_{1}, \mathbf{v}_{1}), \ldots, (\mathbf{u}_{n}, \mathbf{v}_{n}) \} \sim \mathcal{N}_{2r} (\mathbf{0},\Psi).$$
 
 \bigskip
-See @Hoff2007 for why this component generalizes both the latent space and latent class model. 
+**Literature:** See @Hoff2007 for the proof of generalizability of both the latent space and latent class model. 
 
 
 ## AME Network Model: Additive plus Multiplicative Effects
-Taking additive and multiplicative effects into account, let
+Taking additive and multiplicative effects into account, the AME model is:
 $$
 \begin{aligned}
       y_{ij} &= \beta^T \mathbf{x}_{ij} + e_{ij} \\
@@ -287,12 +304,12 @@ $$Y = M(X, \boldsymbol{\beta}) + \mathbf{a} \mathbf{1}^T + \mathbf{1} \mathbf{a}
 in the symmetric case.
 
 \bigskip
-**Next:** Parameter Estimation with MCMC sampling
+**Next:** Parameter Estimation in Bayesian fashion with MCMC sampling.
 
 
 ## Bayesian Approach: Prior Specification
 
-Objective: Approximate posterior distribution of $\boldsymbol{\beta}, \Sigma, \sigma^2, \rho, \mathbf{a}, \mathbf{b}$ and $\mathbf{u}, \mathbf{v}$ with Gibbs sampling.
+**Objective:** Approximate posterior distribution of $\boldsymbol{\beta}, \Sigma, \sigma^2, \rho, \mathbf{a}, \mathbf{b}$ and $\mathbf{u}, \mathbf{v}$ with Gibbs sampling as MCMC estimation approach.
 
 For appropriate $\beta_0, Q_0, \nu_0, \Sigma_0, \eta_0$, let
 $$
@@ -305,7 +322,7 @@ $$
 
 
 
-## Gibbs Sampling
+## Bayesian Approach: Gibbs Sampling
 ```{=latex}
 \begin{algorithm}[H]
 Initalize unkown variables\;
@@ -317,6 +334,8 @@ Initalize unkown variables\;
  \caption{Gibbs Sampling for the SRRM, P. D. Hoff (2021).}
 \end{algorithm}
 ```
+\bigskip
+**Remark:** Simulation of $Y$ is used to assess model fit, by comparing the distribution of the posterior goodness of fit statistics to the observed value.
 
 ---
 
@@ -330,17 +349,28 @@ Initalize unkown variables\;
 \end{algorithm} 
 ```
 
+\bigskip
+**Remark:** Implemented in the R-package `amen` from @ramen.
+
 ## AME Network Model: Extensions
 
-- Extensions available to include binary, count, ordinal, and censored data as outcome variables. 
-- Modifications to the sampling algorithm necessary if other outcome variables are selected. (E.g. in the application case below.) See @Hoff2021 for specifics.
+- Extensions available to include binary, count, ordinal, and censored data as outcome. 
+- Modifications to the sampling algorithm necessary if other outcome variables are selected. (E.g. in the application case below.) 
+- Replicated or Longitudinal Network Data require extended approaches.
 
-- Replicated or Longitudinal Network Data require extended approaches. See @hoff2015longitudinal or @dynamicAMEN for two different approaches. 
+\bigskip
+**Note:** The R-package `amen` does include options for replicated / longitudinal data.
+
+\bigskip
+**Literature:** 
+
+  - @Hoff2021 for specifics of the algorithms and outcome variables.
+  - @hoff2015longitudinal and @dynamicAMEN introduce longitudinal extensions.
 
 # Application Case: Interstate Defence Alliances in 2000
 
 ## Interstate Defence Alliances in 2000
-```{r alliancesfigure, fig.cap = "The interstate defence alliance network in the year 2000.", fig.align = "center", out.height="85%"}
+```{r alliancesfigure, fig.cap = "The interstate defence alliance network in the year 2000. Countries with no interstate alliance recorded are ommitted.", fig.align = "center", out.height="85%"}
 knitr::include_graphics("figures/alliancesplot_slides.pdf")
 ```
 
@@ -364,22 +394,24 @@ cycle.dependency(Y) &= 0.3881
 \end{aligned}
 $$
 
-Remark: An ANOVA F-test for equality of row- or columnmeans yields an F-statistic of 10.967. The Null Hypothesis of equality of row- or columnmeans is thus rejected.
+**Note:** An ANOVA F-test for equality of row- or column-means yields an F-statistic of 10.967. The Null Hypothesis of equality of row- or column-means is thus rejected.
 
-Conclusion: Significant network effects present!
+**Conclusion:** Significant network effects present!
 
 
 ## Covariate Selection 
 
+Selection follows the approach of @dynamicAMEN and @geometryofsecurity:
+
+\bigskip
 *1. Nodal Covariates:*^[Adding the *Composite Index of National Capability* (CINC) as a measure for military capability, appended in the alliances data set, did not improve model fit during preliminary modeling. It is therefore omitted from the analysis.] 
 
   - Log Gross Domestic Product (GDP) in per capita terms.
 
-\bigskip
 *2. Dyadic Covariates:* 
 
-  - Geographic factors
-  - Political and Military similarity
+  - Geographic Factors
+  - Political and Military Similarity
   - Past Conflicts
   - Economic Dependence 
   - Cultural Similarity
@@ -387,20 +419,23 @@ Conclusion: Significant network effects present!
 ---
 
 1. $GeoDistance_{ij}$ is the logarithmic geographic distance between two countries measured by the distance of the respective capitals. If two countries share a border, the log distance is set 0. 
+
 2. $CulturalSim_{ij}$ is a dichotomous variable which takes the value 1, if the most spoken language of two countries is the same, 0 else.^[I use data from the replication files of @geometryofsecurity and choose the year 1985, since the year 2000 did not seem to be accurate.] 
 
 ---
 
 3. $EconomicDep_{ij}$ is a measure^[To construct this index, I take data from the Correlates of War Project on trade flows (@tradedata) and @wdigdp. Missing data points for GDP are imputed on individual basis, negative values for trade are set to 0.] for the economic dependence of two states, calculated by the share of Imports and Exports to the respective GDP: 
   $$EconomicDep_{ij} = min\left(\frac{Trade_{ij}}{GDP_i}, \frac{Trade_{ij}}{GDP_j} \right) \cdot 100\%$$
+
 4. $SharedAllies_{ij}$ is the number of shared allies between country $i$ and $j$. 
 
 ---
 
 5. $ConflictInd_{ij}$ is an indicator variable that takes the value 1 if a militarized interstate dispute was recorded in the preceding 10 years between country $i$ and $j$, 0 else.
+
 6. $PoliticalSim_{ij}$ is a measure for the political dissimilarity of country $i$ and $j$ and is constructed using data from the Polity IV Index:^[The Polity IV index classifies countries on a 21 point scale from -10 to 10, where -10 to -6 corresponds to autocracies, -5 to 5 to anocracies, and 6 to 10 to democracies.]
   $$PoliticalSim_{ij} = \lvert POLITY_i - POLITY_j \rvert$$
-  Note that a high value in *PoliticalSim* corresponds to a high *dissimilarity*.
+  *Note:* a high value in $PoliticalSim_{ij}$ corresponds to a high *dissimilarity*.
 
 ---
 
@@ -413,11 +448,17 @@ Conclusion: Significant network effects present!
 ## Model Comparison 
 
 First, to validate the Network Approach, the following specifications are compared:
-
-\bigskip
+  
 - Probit Regression vs. Additive Effects model
 - Additive Effects model vs. Multiplicative Effects model
 - Multiplicative Effects model vs. AME model
+
+\bigskip
+Model Specifications:
+
+- Multiplicative effects of rank 2 (if included).
+- Burn-in of 10,000 and 100,000 regular iterations.
+- Due to high auto-correlation: thinned by keeping every 100\textsuperscript{th} sample.
 
 ---
 
@@ -504,20 +545,21 @@ knitr::include_graphics("figures/latentfactors.pdf")
 knitr::include_graphics("figures/ametraceplotsncol3.pdf")
 ```
 
+
 ## Further Approaches
 
-Result: Select AME model based on the posterior goodness of fit comparison to the other approaches.
+**Result:** Select the AME network model based on the posterior goodness of fit comparison with the other specifications.
 
-But, trace plots exhibit problematic aspects and effective sample size is very low.
+But, trace plots exhibit problematic characteristics and effective sample size is very low.
 
 
-Next:
+**Next:**
 
 - Increasing the dimension of the latent factor, for example R = 5.
-- Dropping the Intercept.
-- Dropping covariates with lowest effective Sample Size, i. e., *SharedAllies* and *ConflictInd*.
-- Leaving only the 'significant' covariates *Intercept, GeoDistance, EconomicDep, SharedAllies*, and *PoliticalSim*.
-- Longer Estimation Times (I. e., 4x Iteration and Burn-in Time)
+- Dropping the *Intercept*.
+- Dropping covariates with lowest effective sample size: *SharedAllies*, *ConflictInd*.^[Not shown here.]
+- Leaving only the 'significant' covariates, here: *Intercept, GeoDistance, EconomicDep, SharedAllies*, and *PoliticalSim*.
+- Longer estimation times (here 4x iteration and burn-in).
 
 
 ## Further Approaches: Rank 2 vs. Rank 5
@@ -526,29 +568,72 @@ knitr::include_graphics("figures/amer2vsamer5.pdf")
 ```
 
 
+## Further Approaches: w/o Intercept
 
-## Further Approaches: Estimates
+```{r modelcomparisonNoIntercept, results='asis'}
+modelAMEvsNOIC <- cbind(table_ame(fitZNII0H), 
+                        rbind(rep(" ", 3), table_ame(fitFVAEMT)))
+rownames(modelAMEvsNOIC)[1] <- "Intercept"
+
+modelAMEmsg <- paste("Effective Sample Size of the AME Network Model (R=2): ", toString(round(coda::effectiveSize(fitZNII0H$BETA))), ".", sep = "")
+modelNOICmsg <- paste("Effective Sample Size of the AME (R=2) w/o Intercept: ", toString(round(coda::effectiveSize(fitFVAEMT$BETA))), ".", sep = "") 
+
+kbl(modelAMEvsNOIC, booktabs = T) %>%
+  kable_styling(position = "center", latex_options = c("scale_down")) %>%
+  column_spec(1, width = "4cm") %>%
+  pack_rows("AME Components", 10, 11, latex_gap_space = "1em") %>%
+  add_header_above(c(" " = 1 , "AME Network Model (R=2)" = 3, "AME (R=2) w/o Intercept" = 3)) %>%
+  footnote(number = c(modelAMEmsg, modelNOICmsg))
+```
+
+---
+
+```{r GOFnoIC, fig.cap = "Posterior goodness of fit statistics for the AME rank 2 with all covariates (green) and w/o intercept (grey) specified.", fig.align = "center", out.width="95%"}
+knitr::include_graphics("figures/amewointercept_slides.pdf")
+```
+
+
+## Further Approaches: Dropping 'non-significant' Covariates
 ```{r modelcomparison3, results='asis'}
 
 modelAMErestr <- rbind(table_ame(fitGIPKVP)[1:3, ], rep(" ", 3), table_ame(fitGIPKVP)[4:5, ], 
                        rep(" ", 3), table_ame(fitGIPKVP)[6, ], rep(" ", 3), table_ame(fitGIPKVP)[7:8, ])
   
-modelAMErestr <- cbind(modelAMErestr, table_ame(fitRU7J8K))
-rownames(modelAMErestr) <- rownames(table_ame(fitRU7J8K))
+modelAMErestr <- cbind(table_ame(fitZNII0H), modelAMErestr)
+rownames(modelAMErestr) <- rownames(table_ame(fitZNII0H))
 rownames(modelAMErestr)[1] <- "Intercept"
 
-modelAME1msg <- paste("Effective Sample Size: ", toString(round(coda::effectiveSize(fitGIPKVP$BETA))), ".", sep = "") 
-modelAME2msg <- paste("Effective Sample Size: ", toString(round(coda::effectiveSize(fitRU7J8K$BETA))), ".", sep = "") 
+modelAME1msg <- paste("Effective Sample Size of the AME (R=2): ", toString(round(coda::effectiveSize(fitZNII0H$BETA))), ".", sep = "") 
+modelAME2msg <- paste("Effective Sample Size of the AME (R=2, selected): ", toString(round(coda::effectiveSize(fitGIPKVP$BETA))), ".", sep = "") 
 
 kbl(modelAMErestr, booktabs = T) %>%
   kable_styling(position = "center", latex_options = c("scale_down")) %>%
   column_spec(1, width = "4cm") %>%
   pack_rows("AME Components", 10, 11, latex_gap_space = "1em") %>%
-  add_header_above(c(" " = 1 , "AME (R=2, selected)" = 3, "AME (R=2, 4x)" = 3)) %>%
+  add_header_above(c(" " = 1 , "AME (R=2)" = 3, "AME (R=2, selected)" = 3)) %>%
   footnote(number = c(modelAME1msg, modelAME2msg))
 ```
 
+
 ## Further Approaches: Longer Estimation Times
+```{r modelcomparison4, results='asis'}
+  
+modelAMErestr <- cbind(table_ame(fitZNII0H), table_ame(fitRU7J8K))
+rownames(modelAMErestr) <- rownames(table_ame(fitRU7J8K))
+rownames(modelAMErestr)[1] <- "Intercept"
+
+modelAME1msg <- paste("Effective Sample Size of the AME (R=2): ", toString(round(coda::effectiveSize(fitZNII0H$BETA))), ".", sep = "") 
+modelAME2msg <- paste("Effective Sample Size of the AME (R=2, 4x): ", toString(round(coda::effectiveSize(fitRU7J8K$BETA))), ".", sep = "") 
+
+kbl(modelAMErestr, booktabs = T) %>%
+  kable_styling(position = "center", latex_options = c("scale_down")) %>%
+  column_spec(1, width = "4cm") %>%
+  pack_rows("AME Components", 10, 11, latex_gap_space = "1em") %>%
+  add_header_above(c(" " = 1 , "AME (R=2)" = 3, "AME (R=2, 4x)" = 3)) %>%
+  footnote(number = c(modelAME1msg, modelAME2msg))
+```
+
+---
 
 ```{r ame4xtrace, fig.cap ="Trace plots for estimated posterior variance of the additive effect and the intercept. Results based on 400,000 iterations and a burn-in period of 100,000. Chains were thinned by keeping every $100^{th}$ sample.", fig.align='center', out.width="95%"}
 knitr::include_graphics("figures/ame4xtraceplot.pdf")
@@ -556,14 +641,14 @@ knitr::include_graphics("figures/ame4xtraceplot.pdf")
 
 ---
 
-```{r gofstats100vs400, fig.cap ="Posterior Goodness of Fit statistics for model estimates with 100,000 iterations (grey) and 400,000 iterations (green). A narrower distribution can be identified for the green model.", fig.align='center', out.width="95%"}
+```{r gofstats100vs400, fig.cap ="Posterior goodness of fit statistics for model estimates with 100,000 iterations (grey) and 400,000 iterations (green). A narrower distribution can be identified for the green model.", fig.align='center', out.width="95%"}
 knitr::include_graphics("figures/gofstats100vs400.pdf")
 ```
 
 
-## Further Approaches: w/o covariates
+## Further Approaches: w/o Covariates
 
-```{r GOFnoFE, fig.cap = "Posterior Goodness of Fit Statistics for the AME rank 2 with all covariates (green) and no covariates (blue) specified.", fig.align = "center", out.width="95%"}
+```{r GOFnoFE, fig.cap = "Posterior goodness of fit statistics for the AME rank 2 with all covariates (green) and no covariates (blue) specified.", fig.align = "center", out.width="95%"}
 knitr::include_graphics("figures/GOFnoFE.pdf")
 ```
 
@@ -583,7 +668,7 @@ knitr::include_graphics("figures/latentfactorsAMEnoFE.pdf")
   - However, no evident political or economic nodal covariate available.
 
 \bigskip
-*Idea:* Construct an index of vote patterns in the United Nations, along the lines of the outcome variable in @dynamicAMEN. This is left for further exploration. 
+*Idea:* Construct an index of vote patterns in the United Nations, along the lines of the outcome variable in @dynamicAMEN.
 
 ---
 

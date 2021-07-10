@@ -449,6 +449,26 @@ mcmc_trace(fitFVAEMTparam, facet_args = list(ncol = 2))
 coda::effectiveSize(fitFVAEMT$BETA)
 summary(fitFVAEMT)
 
+par(mfrow = c(1, 2), mai = c(1, 0.5, 0.5, 0.5))
+ht <- c(900, 1000, 200, 100, 200)
+
+# Extension Drop all non significant except GDP DIST ECON SharedAllies POLITY---
+for (k in c(1, 4)) {
+  # AME Model
+  xlim <- range(c(fitFVAEMT$GOF[, k], fitZNII0H$GOF[, k], fitZNII0H$GOF[1, k])) * c(.9, 1.1)
+  hist(fitZNII0H$GOF[-1, k],
+       prob = TRUE, col = "yellowgreen", xlim = xlim, main = "", ylab = "",
+       xlab = colnames(fitZNII0H$GOF)[k], ylim = c(0, ht[k])
+  )
+  # No Covariates
+  clr <- c(col2rgb("slategrey") / 255, .75)
+  hist(fitFVAEMT$GOF[-1, k],
+       prob = TRUE, add = TRUE,
+       col = rgb(clr[1], clr[2], clr[3], clr[4])
+  )
+  
+  abline(v = fitZNII0H$GOF[1, k], col = "red")
+}
 
 
 # Extension AME drop SharedA Conflict-------------------------------------------
@@ -457,7 +477,6 @@ coda::effectiveSize(fitEQNO0V$BETA)
 summary(fitEQNO0V)
 
 
-# Extension Drop all non significant except GDP DIST ECON SharedAllies POLITY---
 
 
 
